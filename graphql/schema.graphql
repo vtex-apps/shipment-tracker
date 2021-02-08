@@ -1,0 +1,30 @@
+type Query {
+  config: Config @cacheControl(scope: PRIVATE)
+  allShipments: [Shipment] @cacheControl(scope: PRIVATE maxAge: Medium)
+  interactions(shipment: ID): [Interaction] @cacheControl(scope: PRIVATE maxAge: Medium)
+  shipment(id: String): Shipment @cacheControl(scope: PRIVATE maxAge: Medium)
+}
+
+type Mutation {
+  addShipment(trackingNum: String, carrier: String, status: String): Boolean
+  addInteraction(shipment: ID, interaction: String, status: String): Boolean
+}
+
+type Config {
+  schema: Boolean
+  title: String
+}
+
+type Shipment {
+  id: String
+  trackingNum: String
+  carrier: String
+  status: String
+}
+
+type Interaction {
+  id: String
+  shipment: ID
+  interaction: String
+  status: String
+}
