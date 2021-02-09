@@ -32,6 +32,7 @@
       "*"
     ]
   },
+  "credentialType": "absolute",
   "policies": [
     {
       "name": "update-app-settings"
@@ -43,10 +44,23 @@
       "name": "ADMIN_DS"
     },
     {
+      "name": "OMSViewer"
+    },
+    {
+      "name": "LogisticsViewer"
+    },
+    {
       "name": "outbound-access",
       "attrs": {
         "host": "api.vtex.com",
         "path": "/api/dataentities/*"
+      }
+    },
+    {
+      "name": "outbound-access",
+      "attrs": {
+        "host": "portal.vtexcommercestable.com.br",
+        "path": "/api/*"
       }
     }
   ],

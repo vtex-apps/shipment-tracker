@@ -101,7 +101,7 @@ export const resolvers = {
         title: 'Shipment Tracking',
       }
 
-      if(!settings.title) {
+      if (!settings.title) {
         settings = defaultSettings
       }
 
@@ -115,12 +115,12 @@ export const resolvers = {
           await hub.put(url, schemaShipments, headers)
 
         } catch (e) {
-          if(e.response.status >= 400) {
+          if (e.response.status >= 400) {
             schemaError = true
           }
         }
 
-        if(!schemaError) {
+        if (!schemaError) {
           try {
             const url = routes.saveSchemaInteraction(account)
             const headers = defaultHeaders(authToken)
@@ -128,7 +128,7 @@ export const resolvers = {
             await hub.put(url, schemaInteractions, headers)
 
           } catch (e) {
-            if(e.response.status >= 400) {
+            if (e.response.status >= 400) {
               schemaError = true
             }
           }
@@ -148,9 +148,7 @@ export const resolvers = {
       ctx: Context
     ) => {
       const {
-        clients: {
-          masterdata
-        }
+        clients: { masterdata },
       } = ctx
 
       const result = await masterdata.searchDocuments({
@@ -172,9 +170,7 @@ export const resolvers = {
       ctx: Context
     ) => {
       const {
-        clients: {
-          masterdata
-        }
+        clients: { masterdata },
       } = ctx
 
       const result = await masterdata.searchDocuments({
@@ -196,9 +192,7 @@ export const resolvers = {
       ctx: Context
     ) => {
       const {
-        clients: {
-          masterdata
-        }
+        clients: { masterdata },
       } = ctx
 
       const result = await masterdata.searchDocuments({
@@ -218,15 +212,14 @@ export const resolvers = {
   Mutation: {
     addShipment: async (_:any, args: any, ctx: Context) => {
       const {
-        clients: {
-          masterdata
-        },
+        clients: { masterdata },
       } = ctx
 
       return masterdata.createDocument({dataEntity: 'shipment', fields: args, schema: SCHEMA_VERSION,
         }).then((res: any) => {
           return res.DocumentId
-        }).catch((err: any) => {
+        })
+        .catch((err: any) => {
           return err.response.message
         })
     },
@@ -240,7 +233,8 @@ export const resolvers = {
       return masterdata.createDocument({dataEntity: 'interaction', fields: args, schema: SCHEMA_VERSION,
         }).then((res: any) => {
           return res.DocumentId
-        }).catch((err: any) => {
+        })
+        .catch((err: any) => {
           return err.response.message
         })
     },
