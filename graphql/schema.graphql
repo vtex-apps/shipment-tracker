@@ -6,8 +6,8 @@ type Query {
 }
 
 type Mutation {
-  addShipment(trackingNum: String, carrier: String, status: String): Boolean
-  addInteraction(shipment: ID, interaction: String, status: String): Boolean
+  addShipment(trackingNumber: String, carrier: String, status: String): String
+  addInteraction(shipment: ID, interaction: String, status: String): String
 }
 
 type Config {
@@ -17,14 +17,14 @@ type Config {
 
 type Shipment {
   id: String
-  trackingNum: String
+  trackingNumber: String
   carrier: String
   status: String
 }
 
 type Interaction {
   id: String
-  shipment: ID
+  shipmentId: ID
   interaction: String
   status: String
 }

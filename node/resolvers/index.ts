@@ -4,10 +4,10 @@ import { Apps } from '@vtex/api'
 const getAppId = (): string => {
   return process.env.VTEX_APP_ID ?? ''
 }
-const SCHEMA_VERSION = 'v0.1'
+const SCHEMA_VERSION = 'v0.2'
 const schemaShipments = {
   properties: {
-    trackingNum: {
+    trackingNumber: {
       type: 'string',
       title: 'Tracking Number',
     },
@@ -19,18 +19,22 @@ const schemaShipments = {
       type: 'string',
       title: 'Status',
     },
+    updatedIn: {
+      type: 'string',
+      title: 'Last Update'
+    },
     creationDate: {
       type: 'string',
       title: 'Creation Date',
     },
   },
-  'v-indexed': ['trackingNum', 'carrier', 'status', 'creationDate'],
+  'v-indexed': ['trackingNum', 'carrier', 'status', 'updatedIn', 'creationDate'],
   'v-default-fields': ['trackingNum', 'creationDate'],
   'v-cache': false,
 }
 const schemaInteractions = {
   properties: {
-    shipment: {
+    shipmentId: {
       type: 'string',
       title: 'Shipment ID',
     },
@@ -42,12 +46,16 @@ const schemaInteractions = {
       type: 'string',
       title: 'Status',
     },
+    updatedIn: {
+      type: 'string',
+      title: 'Last Update'
+    },
     creationDate: {
       type: 'string',
       title: 'Creation Date',
     },
   },
-  'v-indexed': ['shipment', 'interaction', 'status', 'creationDate'],
+  'v-indexed': ['shipment', 'interaction', 'status', 'updatedIn', 'creationDate'],
   'v-default-fields': ['interaction', 'status', 'creationDate'],
   'v-cache': false,
 }
@@ -55,17 +63,17 @@ const schemaInteractions = {
 const routes = {
   baseUrl: (account: string) =>
     `http://${account}.vtexcommercestable.com.br/api`,
-    questionEntity: (account: string) =>
-    `${routes.baseUrl(account)}/dataentities/qna`,
+    shipmentEntity: (account: string) =>
+    `${routes.baseUrl(account)}/dataentities/shipment`,
 
-    answerEntity: (account: string) =>
-    `${routes.baseUrl(account)}/dataentities/answer`,
+    interactionEntity: (account: string) =>
+    `${routes.baseUrl(account)}/dataentities/interaction`,
 
-  saveSchemaQuestion: (account: string) =>
-    `${routes.questionEntity(account)}/schemas/${SCHEMA_VERSION}`,
+  saveSchemaShipment: (account: string) =>
+    `${routes.shipmentEntity(account)}/schemas/${SCHEMA_VERSION}`,
 
-    saveSchemaAnswer: (account: string) =>
-    `${routes.answerEntity(account)}/schemas/${SCHEMA_VERSION}`,
+    saveSchemaInteraction: (account: string) =>
+    `${routes.interactionEntity(account)}/schemas/${SCHEMA_VERSION}`,
 
 }
 
@@ -90,11 +98,7 @@ export const resolvers = {
       const defaultSettings = {
         schema: false,
         schemaVersion: null,
-        title: 'Q&A',
-        anonymous: false,
-        search: true,
-        maxQuestions: 10,
-        moderation: false
+        title: 'Shipment Tracking',
       }
 
       if(!settings.title) {
@@ -105,10 +109,10 @@ export const resolvers = {
 
       if (!settings.schema || settings.schemaVersion !== SCHEMA_VERSION) {
         try {
-          const url = routes.saveSchemaQuestion(account)
+          const url = routes.saveSchemaShipment(account)
           const headers = defaultHeaders(authToken)
 
-          await hub.put(url, schemaQuestions, headers)
+          await hub.put(url, schemaShipments, headers)
 
         } catch (e) {
           if(e.response.status >= 400) {
@@ -118,10 +122,10 @@ export const resolvers = {
 
         if(!schemaError) {
           try {
-            const url = routes.saveSchemaAnswer(account)
+            const url = routes.saveSchemaInteraction(account)
             const headers = defaultHeaders(authToken)
 
-            await hub.put(url, schemaAnswers, headers)
+            await hub.put(url, schemaInteractions, headers)
 
           } catch (e) {
             if(e.response.status >= 400) {
@@ -138,7 +142,31 @@ export const resolvers = {
 
       return settings
     },
-    questions: async (
+    allShipments: async (
+      _: any,
+      __: any,
+      ctx: Context
+    ) => {
+      const {
+        clients: {
+          masterdata
+        }
+      } = ctx
+
+      const result = await masterdata.searchDocuments({
+        dataEntity: 'shipment',
+        fields: ['id', 'trackingNumber','carrier', 'status', 'creationDate', 'updatedIn'],
+        where: `status=pending`,
+        pagination: {
+          page: 1,
+          pageSize: 99,
+        },
+        schema: SCHEMA_VERSION,
+      })
+
+      return result
+    },
+    interactions: async (
       _: any,
       args: any,
       ctx: Context
@@ -150,10 +178,9 @@ export const resolvers = {
       } = ctx
 
       const result = await masterdata.searchDocuments({
-        dataEntity: 'qna',
-        fields: ['id', 'question','name', 'email', 'anonymous', 'answers', 'votes', 'creationDate', 'allowed', 'productId'],
-        sort: 'votes DESC',
-        where: `productId=${args.productId} AND allowed=${true}`,
+        dataEntity: 'interaction',
+        fields: ['id', 'shipmentId','interaction', 'status', 'updatedIn', 'creationDate'],
+        where: `shipmentId=${args.shipmentId} AND status="pending"`,
         pagination: {
           page: 1,
           pageSize: 99,
@@ -163,7 +190,7 @@ export const resolvers = {
 
       return result
     },
-    search: async (
+    shipment: async (
       _: any,
       args: any,
       ctx: Context
@@ -175,75 +202,9 @@ export const resolvers = {
       } = ctx
 
       const result = await masterdata.searchDocuments({
-        dataEntity: 'qna',
-        fields: ['id', 'question','name', 'email', 'anonymous', 'answers', 'votes', 'creationDate', 'allowed', 'productId'],
-        sort: 'votes DESC',
-        pagination: {
-          page: 1,
-          pageSize: 99,
-        },
-        where: `productId=${args.productId} AND question=*${args.keyword}*  AND allowed=${true}`,
-        schema: SCHEMA_VERSION,
-      })
-
-      return result
-    },
-    answers: async (
-      _: any,
-      args: any,
-      ctx: Context
-    ) => {
-      const {
-        clients: {
-          masterdata
-        }
-      } = ctx
-
-      const result = await masterdata.searchDocuments({
-        dataEntity: 'answer',
-        fields: ['id', 'answer','votes', 'questionId', 'name', 'email', 'anonymous', 'allowed'],
-        sort: 'votes DESC',
-        pagination: {
-          page: 1,
-          pageSize: 99,
-        },
-        where: `questionId=${args.questionId}  AND allowed=${true}`,
-        schema: SCHEMA_VERSION,
-      })
-
-      return result
-    },
-    allQuestions: async (_: any, __: any, ctx: Context) => {
-      const {
-        clients: {
-          masterdata
-        }
-      } = ctx
-
-      const result = await masterdata.searchDocuments({
-        dataEntity: 'qna',
-        fields: ['id', 'question','name', 'email', 'anonymous', 'answers', 'votes', 'creationDate', 'allowed', 'productId'],
-        sort: "allowed DESC",
-        pagination: {
-          page: 1,
-          pageSize: 99,
-        },
-        schema: SCHEMA_VERSION,
-      })
-
-      return result
-    },
-    allAnswers: async (_: any, __: any, ctx: Context) => {
-      const {
-        clients: {
-          masterdata
-        }
-      } = ctx
-
-      const result = await masterdata.searchDocuments({
-        dataEntity: 'answer',
-        fields: ['id', 'answer','name', 'email', 'anonymous', 'votes', 'creationDate', 'allowed', 'questionId'],
-        sort: "allowed ASC",
+        dataEntity: 'shipment',
+        fields: ['id', 'trackingNumber','carrier', 'status', 'creationDate', 'updatedIn'],
+        where: `shipmentId=${args.shipmentId}`,
         pagination: {
           page: 1,
           pageSize: 99,
@@ -255,280 +216,33 @@ export const resolvers = {
     },
   },
   Mutation: {
-    addQuestion: async (_:any, args: any, ctx: Context) => {
+    addShipment: async (_:any, args: any, ctx: Context) => {
       const {
         clients: {
           masterdata
         },
       } = ctx
 
-      return masterdata.createDocument({dataEntity: 'qna', fields: args, schema: SCHEMA_VERSION,
+      return masterdata.createDocument({dataEntity: 'shipment', fields: args, schema: SCHEMA_VERSION,
         }).then((res: any) => {
           return res.DocumentId
         }).catch((err: any) => {
           return err.response.message
         })
     },
-    addAnswer: async (_:any, args: any, ctx: Context) => {
+    addInteraction: async (_:any, args: any, ctx: Context) => {
       const {
         clients: {
-          masterdata,
-          hub
+          masterdata
         },
-        vtex: {
-          account,
-          authToken
-        }
       } = ctx
 
-      const result:any = await masterdata.createDocument({dataEntity: 'answer', fields: args, schema: SCHEMA_VERSION,
+      return masterdata.createDocument({dataEntity: 'interaction', fields: args, schema: SCHEMA_VERSION,
         }).then((res: any) => {
           return res.DocumentId
         }).catch((err: any) => {
           return err.response.message
         })
-
-      const question:any = await masterdata.getDocument({
-        dataEntity: 'qna',
-        id: args.questionId,
-        fields: ['answers']
-      })
-
-      const answers = question.answers ?? []
-      answers.push({...args, id: result})
-
-      console.log(args)
-      const headers = defaultHeaders(authToken)
-      await hub.patch(`http://api.vtex.com/api/dataentities/qna/documents/${args.questionId}?an=${account}&_schema=${SCHEMA_VERSION}`, {
-        answers
-      }, headers).then(() => {
-        return answers
-      }).catch(() => {
-        return answers
-      })
-
-      return result
     },
-    voteQuestion: async (_:any, args: any, ctx: Context) => {
-      const {
-        clients: {
-          masterdata,
-          hub,
-        },
-        vtex: {
-          account,
-          authToken,
-        }
-      } = ctx
-
-      const question:any = await masterdata.getDocument({
-        dataEntity: 'qna',
-        id: args.id,
-        fields: ['votes']
-      })
-      const votes:number = question?.votes ?? 0
-
-      const newVote = votes + parseInt(args.vote, 10)
-      const headers = defaultHeaders(authToken)
-      const result = await hub.patch(`http://api.vtex.com/api/dataentities/qna/documents/${args.id}?an=${account}&_schema=${SCHEMA_VERSION}`, {
-          votes: newVote
-      }, headers).then(() => {
-        return newVote
-      }).catch(() => {
-        return votes
-      })
-      return {votes: result, id: args.id}
-
-    },
-    voteAnswer: async (_:any, args: any, ctx: Context) => {
-      const {
-        clients: {
-          masterdata,
-          hub,
-        },
-        vtex: {
-          account,
-          authToken,
-        }
-      } = ctx
-
-      const answer:any = await masterdata.getDocument({
-        dataEntity: 'answer',
-        id: args.id,
-        fields: ['votes','questionId']
-      })
-
-      const votes:number = answer?.votes ?? 0
-      const newVote = votes + 1
-
-      const headers = defaultHeaders(authToken)
-      const result = await hub.patch(`http://api.vtex.com/api/dataentities/answer/documents/${args.id}?an=${account}&_schema=${SCHEMA_VERSION}`, {
-          votes: newVote
-      }, headers).then(() => {
-        return newVote
-      }).catch(() => {
-        return votes
-      })
-
-      const answers = await masterdata.searchDocuments({
-        dataEntity: 'answer',
-        fields: ['id', 'answer','votes', 'questionId', 'name', 'email', 'anonymous', 'allowed'],
-        sort: 'votes DESC',
-        pagination: {
-          page: 1,
-          pageSize: 99,
-        },
-        where: `questionId=${answer.questionId}`,
-        schema: SCHEMA_VERSION,
-      })
-
-      await hub.patch(`http://api.vtex.com/api/dataentities/qna/documents/${answer.questionId}?an=${account}&_schema=${SCHEMA_VERSION}`, {
-        answers
-      }, headers).then((e) => {
-        console.log("contents =>", e)
-        return answers
-      }).catch((e) => {
-        console.log("error =>", e)
-        return answers
-      })
-
-      return {votes: result, id: args.id}
-
-    },
-    moderateQuestion: async (_:any, args: any, ctx: Context) => {
-      const {
-        clients: {
-          masterdata,
-          hub,
-        },
-        vtex: {
-          account,
-          authToken,
-        }
-      } = ctx
-
-      const question:any = await masterdata.getDocument({
-        dataEntity: 'qna',
-        id: args.id,
-        fields: ['allowed', 'id']
-      })
-
-      const allowed = !question.allowed
-      const headers = defaultHeaders(authToken)
-      await hub.patch(`http://api.vtex.com/api/dataentities/qna/documents/${args.id}?an=${account}&_schema=${SCHEMA_VERSION}`, {
-          allowed: allowed
-      }, headers).then(() => {
-        return allowed
-      })
-
-      return args.id
-    },
-    moderateAnswer: async (_:any, args: any, ctx: Context) => {
-      const {
-        clients: {
-          masterdata,
-          hub,
-        },
-        vtex: {
-          account,
-          authToken,
-        }
-      } = ctx
-
-      const answer:any = await masterdata.getDocument({
-        dataEntity: 'answer',
-        id: args.answerId,
-        fields: ['allowed','questionId']
-      })
-
-      const newAllowed = !answer.allowed
-
-      const headers = defaultHeaders(authToken)
-      await hub.patch(`http://api.vtex.com/api/dataentities/answer/documents/${args.answerId}?an=${account}&_schema=${SCHEMA_VERSION}`, {
-          allowed: newAllowed
-      }, headers).then(() => {
-        return newAllowed
-      })
-
-      const answers = await masterdata.searchDocuments({
-        dataEntity: 'answer',
-        fields: ['id', 'answer','votes', 'questionId', 'name', 'email', 'anonymous', 'allowed'],
-        sort: 'votes DESC',
-        pagination: {
-          page: 1,
-          pageSize: 99,
-        },
-        where: `questionId=${answer.questionId}`,
-        schema: SCHEMA_VERSION,
-      })
-
-      await hub.patch(`http://api.vtex.com/api/dataentities/qna/documents/${answer.questionId}?an=${account}&_schema=${SCHEMA_VERSION}`, {
-        answers
-      }, headers).then((e) => {
-        console.log("contents =>", e)
-        return answers
-      }).catch((e) => {
-        console.log("error =>", e)
-        return answers
-      })
-
-      console.log("answer.id =>", answer.id)
-      console.log("args.id =>", args.answerId)
-
-      return args.answerId
-
-    },
-    deleteQuestion: (_:any, args: any, ctx: Context) => {
-      const {
-        clients: {
-          masterdata
-        },
-      } = ctx
-
-      return masterdata.deleteDocument({dataEntity: 'qna', id: args.id
-        }).then(() => {
-          return true
-        }).catch(() => {
-          return false
-        })
-    },
-    deleteAnswer: (_:any, args: any, ctx: Context) => {
-      const {
-        clients: {
-          masterdata
-        },
-      } = ctx
-
-      return masterdata.deleteDocument({dataEntity: 'answer', id: args.id
-        }).then(() => {
-          return true
-        }).catch(() => {
-          return false
-        })
-
-    },
-    saveSettings: async (_:any, args: any, ctx: Context) => {
-      const {
-        clients: {
-
-        },
-      } = ctx
-
-      const apps = new Apps(ctx.vtex)
-      const app: string = getAppId()
-      let settings = {
-        schema: null,
-        schemaVersion: SCHEMA_VERSION,
-        title: 'Q&A',
-        anonymous: args.anonymous,
-        search: args.search,
-        maxQuestions: args.maxQuestions || 10,
-        moderation: args.moderation
-      }
-
-      await apps.saveAppSettings(app, settings)
-
-      return true
-    }
   }
 }
