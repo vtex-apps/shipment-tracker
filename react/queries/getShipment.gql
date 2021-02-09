@@ -1,0 +1,8 @@
+query GetShipment($shipmentId: String!) {
+  interaction(shipmentId: $shipmentId) {
+    id
+    trackingNumber
+    carrier
+    status
+  }
+}

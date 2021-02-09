@@ -4,7 +4,7 @@ import { Apps } from '@vtex/api'
 const getAppId = (): string => {
   return process.env.VTEX_APP_ID ?? ''
 }
-const SCHEMA_VERSION = 'v0.2'
+const SCHEMA_VERSION = 'v0.3'
 const schemaShipments = {
   properties: {
     trackingNumber: {
@@ -28,8 +28,8 @@ const schemaShipments = {
       title: 'Creation Date',
     },
   },
-  'v-indexed': ['trackingNum', 'carrier', 'status', 'updatedIn', 'creationDate'],
-  'v-default-fields': ['trackingNum', 'creationDate'],
+  'v-indexed': ['trackingNumber', 'carrier', 'status', 'updatedIn', 'creationDate'],
+  'v-default-fields': ['trackingNumber', 'creationDate'],
   'v-cache': false,
 }
 const schemaInteractions = {
@@ -63,6 +63,7 @@ const schemaInteractions = {
 const routes = {
   baseUrl: (account: string) =>
     `http://${account}.vtexcommercestable.com.br/api`,
+
     shipmentEntity: (account: string) =>
     `${routes.baseUrl(account)}/dataentities/shipment`,
 
@@ -154,7 +155,7 @@ export const resolvers = {
       const result = await masterdata.searchDocuments({
         dataEntity: 'shipment',
         fields: ['id', 'trackingNumber','carrier', 'status', 'creationDate', 'updatedIn'],
-        where: `status=pending`,
+        // where: `status=pending`,
         pagination: {
           page: 1,
           pageSize: 99,
@@ -214,6 +215,8 @@ export const resolvers = {
       const {
         clients: { masterdata },
       } = ctx
+
+      console.log(args)
 
       return masterdata.createDocument({dataEntity: 'shipment', fields: args, schema: SCHEMA_VERSION,
         }).then((res: any) => {

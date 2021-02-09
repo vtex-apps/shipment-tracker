@@ -1,0 +1,8 @@
+query GetInteractions($shipmentId: String!) {
+  interaction(shipmentId: $shipmentId) {
+    id
+    shipmentId
+    interaction
+    status
+  }
+}

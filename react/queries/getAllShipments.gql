@@ -1,0 +1,8 @@
+query GetAllShipments {
+  allShipments{
+    id
+    trackingNumber
+    carrier
+    status
+  }
+}

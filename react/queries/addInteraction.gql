@@ -1,0 +1,3 @@
+mutation AddInteraction($shipmentId: String, $interaction: String, $status: String) {
+  addInteraction(shipmentId: $shipmentId, interaction: $interaction, status: $status)
+}
