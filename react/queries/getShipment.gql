@@ -1,5 +1,5 @@
-query GetShipment($shipmentId: String!) {
-  interaction(shipmentId: $shipmentId) {
+query GetShipment($id: String!) {
+  shipment(id: $id) {
     id
     trackingNumber
     carrier

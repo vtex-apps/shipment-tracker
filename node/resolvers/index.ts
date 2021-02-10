@@ -4,7 +4,7 @@ import { Apps } from '@vtex/api'
 const getAppId = (): string => {
   return process.env.VTEX_APP_ID ?? ''
 }
-const SCHEMA_VERSION = 'v0.3'
+const SCHEMA_VERSION = 'v0.6'
 const schemaShipments = {
   properties: {
     trackingNumber: {
@@ -55,8 +55,8 @@ const schemaInteractions = {
       title: 'Creation Date',
     },
   },
-  'v-indexed': ['shipment', 'interaction', 'status', 'updatedIn', 'creationDate'],
-  'v-default-fields': ['interaction', 'status', 'creationDate'],
+  'v-indexed': ['shipmentId', 'interaction', 'status', 'updatedIn', 'creationDate'],
+  'v-default-fields': ['shipmentId', 'interaction', 'status', 'creationDate'],
   'v-cache': false,
 }
 
@@ -152,10 +152,11 @@ export const resolvers = {
         clients: { masterdata },
       } = ctx
 
+      console.log("allShipments")
+
       const result = await masterdata.searchDocuments({
         dataEntity: 'shipment',
         fields: ['id', 'trackingNumber','carrier', 'status', 'creationDate', 'updatedIn'],
-        // where: `status=pending`,
         pagination: {
           page: 1,
           pageSize: 99,
@@ -163,6 +164,7 @@ export const resolvers = {
         schema: SCHEMA_VERSION,
       })
 
+      console.log(result)
       return result
     },
     interactions: async (
@@ -177,11 +179,11 @@ export const resolvers = {
       const result = await masterdata.searchDocuments({
         dataEntity: 'interaction',
         fields: ['id', 'shipmentId','interaction', 'status', 'updatedIn', 'creationDate'],
-        where: `shipmentId=${args.shipmentId} AND status="pending"`,
         pagination: {
           page: 1,
           pageSize: 99,
         },
+        where: `shipmentId=${args.shipmentId}`,
         schema: SCHEMA_VERSION,
       })
 
@@ -196,16 +198,18 @@ export const resolvers = {
         clients: { masterdata },
       } = ctx
 
-      const result = await masterdata.searchDocuments({
+      const result:any = await masterdata.searchDocuments({
         dataEntity: 'shipment',
         fields: ['id', 'trackingNumber','carrier', 'status', 'creationDate', 'updatedIn'],
-        where: `shipmentId=${args.shipmentId}`,
+        where: `id=${args.id}`,
         pagination: {
           page: 1,
           pageSize: 99,
         },
         schema: SCHEMA_VERSION,
       })
+
+      console.log(result)
 
       return result
     },

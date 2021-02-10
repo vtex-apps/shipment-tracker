@@ -1,5 +1,5 @@
 query GetInteractions($shipmentId: String!) {
-  interaction(shipmentId: $shipmentId) {
+  interactions(shipmentId: $shipmentId) {
     id
     shipmentId
     interaction

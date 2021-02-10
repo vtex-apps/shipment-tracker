@@ -1,7 +1,7 @@
 {
   "name": "shipping-tracker",
   "vendor": "vtex",
-  "version": "0.0.2",
+  "version": "0.0.1",
   "title": "Shipping Tracker",
   "description": "",
   "mustUpdateAt": "2022-08-28",
@@ -10,7 +10,8 @@
   },
   "dependencies": {
     "vtex.styleguide": "9.x",
-    "vtex.css-handles": "0.x"
+    "vtex.css-handles": "0.x",
+    "vtex.render-runtime": "7.x"
   },
   "builders": {
     "react": "3.x",

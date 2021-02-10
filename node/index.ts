@@ -8,7 +8,7 @@ import {
 } from '@vtex/api'
 
 import { Clients } from './clients'
-// import { resolvers } from './resolvers'
+import { resolvers } from './resolvers'
 import { orderStatusChange } from './events/orderStatusChange'
 
 const TIMEOUT_MS = 800
@@ -42,9 +42,9 @@ declare global {
 
 export default new Service<Clients, RecorderState, ParamsContext>({
   clients,
-  // graphql: {
-  // resolvers,
-  // },
+  graphql: {
+    resolvers,
+  },
   events: {
     orderStatusChange,
   },
