@@ -1,0 +1,13 @@
+query ShipmentsByCarrier($carrier: String) {
+  shipmentsByCarrier(carrier: $carrier) {
+    id
+    trackingNumber
+    carrier
+    delivered
+    orderId
+    invoiceId
+    externalLink
+    createdIn
+    updatedIn
+  }
+}

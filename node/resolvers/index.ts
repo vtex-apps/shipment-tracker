@@ -31,10 +31,6 @@ const schemaShipments = {
       type: 'string',
       title: 'External Id'
     },
-    // updatedIn: {
-    //   type: 'string',
-    //   title: 'Last Update'
-    // },
     creationDate: {
       type: 'string',
       title: 'Creation Date',
@@ -58,10 +54,6 @@ const schemaInteractions = {
       type: 'boolean',
       title: 'Delivery Status',
     },
-    // updatedIn: {
-    //   type: 'string',
-    //   title: 'Last Update'
-    // },
     creationDate: {
       type: 'string',
       title: 'Creation Date',
@@ -151,9 +143,6 @@ export const resolvers = {
         settings.schema = !schemaError
         settings.schemaVersion = !schemaError ? SCHEMA_VERSION : null
 
-        console.log("schemaError =>", schemaError)
-        console.log("settings =>", settings)
-
         await apps.saveAppSettings(app, settings)
       }
 
@@ -167,8 +156,6 @@ export const resolvers = {
       const {
         clients: { masterdata },
       } = ctx
-
-      console.log("allShipments")
 
       const result = await masterdata.searchDocuments({
         dataEntity: 'shipment',
@@ -204,7 +191,6 @@ export const resolvers = {
         schema: SCHEMA_VERSION,
       })
 
-      console.log(result)
       return result
     },
     shipment: async (
@@ -215,8 +201,6 @@ export const resolvers = {
       const {
         clients: { masterdata },
       } = ctx
-
-      console.log(args)
 
       const result:any = await masterdata.searchDocuments({
         dataEntity: 'shipment',
@@ -229,7 +213,27 @@ export const resolvers = {
         schema: SCHEMA_VERSION,
       })
 
-      console.log(result)
+      return result
+    },
+    shipmentsByCarrier: async (
+      _: any,
+      args: any,
+      ctx: Context
+    ) => {
+      const {
+        clients: { masterdata },
+      } = ctx
+
+      const result:any = await masterdata.searchDocuments({
+        dataEntity: 'shipment',
+        fields: ['id', 'trackingNumber','carrier', 'delivered', 'orderId', 'invoiceId', 'externalLink', 'createdIn', 'updatedIn'],
+        where: `carrier=${args.carrier}`,
+        pagination: {
+          page: 1,
+          pageSize: 99,
+        },
+        schema: SCHEMA_VERSION,
+      })
 
       return result
     },

@@ -1,6 +1,7 @@
 type Query {
   config: Config @cacheControl(scope: PRIVATE)
   allShipments: [Shipment] @cacheControl(scope: PRIVATE maxAge: Short)
+  shipmentsByCarrier(carrier: String): [Shipment] @cacheControl(scope: PRIVATE maxAge: Short)
   interactions(shipmentId: String): [Interaction] @cacheControl(scope: PRIVATE maxAge: Medium)
   shipment(id: String): Shipment @cacheControl(scope: PRIVATE maxAge: Medium)
 }
