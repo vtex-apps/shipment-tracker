@@ -3,6 +3,11 @@ query GetShipment($id: String!) {
     id
     trackingNumber
     carrier
-    status
+    delivered
+    orderId
+    invoiceId
+    externalLink
+    createdIn
+    updatedIn
   }
 }

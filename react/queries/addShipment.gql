@@ -1,3 +1,3 @@
-mutation AddShipment($trackingNumber: String, $carrier: String, $status: String) {
-  addShipment(trackingNumber: $trackingNumber, carrier: $carrier, status: $status)
+mutation AddShipment($trackingNumber: String, $carrier: String, $delivered: Boolean, $orderId: String, $invoiceId: String, $externalLink: String) {
+  addShipment(trackingNumber: $trackingNumber, carrier: $carrier, delivered: $delivered, orderId: $orderId, invoiceId: $invoiceId, externalLink: $externalLink)
 }

@@ -4,7 +4,7 @@ import { Apps } from '@vtex/api'
 const getAppId = (): string => {
   return process.env.VTEX_APP_ID ?? ''
 }
-const SCHEMA_VERSION = 'v0.6'
+const SCHEMA_VERSION = 'v0.7'
 const schemaShipments = {
   properties: {
     trackingNumber: {
@@ -15,21 +15,33 @@ const schemaShipments = {
       type: 'string',
       title: 'Carrier',
     },
-    status: {
-      type: 'string',
-      title: 'Status',
+    delivered: {
+      type: 'boolean',
+      title: 'Delivery Status',
     },
-    updatedIn: {
+    orderId: {
       type: 'string',
-      title: 'Last Update'
+      title: 'Order ID'
     },
+    invoiceId: {
+      type: 'string',
+      title: 'Invoice ID'
+    },
+    externalLink: {
+      type: 'string',
+      title: 'External Id'
+    },
+    // updatedIn: {
+    //   type: 'string',
+    //   title: 'Last Update'
+    // },
     creationDate: {
       type: 'string',
       title: 'Creation Date',
     },
   },
-  'v-indexed': ['trackingNumber', 'carrier', 'status', 'updatedIn', 'creationDate'],
-  'v-default-fields': ['trackingNumber', 'creationDate'],
+  'v-indexed': ['trackingNumber', 'carrier', 'delivered', 'orderId', 'invoiceId', 'creationDate'],
+  'v-default-fields': ['trackingNumber', 'carrier', 'delivered', 'orderId', 'invoiceId','creationDate'],
   'v-cache': false,
 }
 const schemaInteractions = {
@@ -42,20 +54,20 @@ const schemaInteractions = {
       type: 'string',
       title: 'Interaction',
     },
-    status: {
-      type: 'string',
-      title: 'Status',
+    delivered: {
+      type: 'boolean',
+      title: 'Delivery Status',
     },
-    updatedIn: {
-      type: 'string',
-      title: 'Last Update'
-    },
+    // updatedIn: {
+    //   type: 'string',
+    //   title: 'Last Update'
+    // },
     creationDate: {
       type: 'string',
       title: 'Creation Date',
     },
   },
-  'v-indexed': ['shipmentId', 'interaction', 'status', 'updatedIn', 'creationDate'],
+  'v-indexed': ['shipmentId', 'interaction', 'status', 'creationDate'],
   'v-default-fields': ['shipmentId', 'interaction', 'status', 'creationDate'],
   'v-cache': false,
 }
@@ -117,6 +129,7 @@ export const resolvers = {
 
         } catch (e) {
           if (e.response.status >= 400) {
+            console.log(e.response)
             schemaError = true
           }
         }
@@ -138,6 +151,9 @@ export const resolvers = {
         settings.schema = !schemaError
         settings.schemaVersion = !schemaError ? SCHEMA_VERSION : null
 
+        console.log("schemaError =>", schemaError)
+        console.log("settings =>", settings)
+
         await apps.saveAppSettings(app, settings)
       }
 
@@ -156,7 +172,7 @@ export const resolvers = {
 
       const result = await masterdata.searchDocuments({
         dataEntity: 'shipment',
-        fields: ['id', 'trackingNumber','carrier', 'status', 'creationDate', 'updatedIn'],
+        fields: ['id', 'trackingNumber','carrier', 'delivered', 'orderId', 'invoiceId', 'externalLink', 'createdIn', 'updatedIn'],
         pagination: {
           page: 1,
           pageSize: 99,
@@ -164,7 +180,6 @@ export const resolvers = {
         schema: SCHEMA_VERSION,
       })
 
-      console.log(result)
       return result
     },
     interactions: async (
@@ -176,9 +191,11 @@ export const resolvers = {
         clients: { masterdata },
       } = ctx
 
+      console.log(args)
+
       const result = await masterdata.searchDocuments({
         dataEntity: 'interaction',
-        fields: ['id', 'shipmentId','interaction', 'status', 'updatedIn', 'creationDate'],
+        fields: ['id', 'shipmentId','interaction', 'delivered', 'updatedIn', 'createdIn'],
         pagination: {
           page: 1,
           pageSize: 99,
@@ -187,6 +204,7 @@ export const resolvers = {
         schema: SCHEMA_VERSION,
       })
 
+      console.log(result)
       return result
     },
     shipment: async (
@@ -198,9 +216,11 @@ export const resolvers = {
         clients: { masterdata },
       } = ctx
 
+      console.log(args)
+
       const result:any = await masterdata.searchDocuments({
         dataEntity: 'shipment',
-        fields: ['id', 'trackingNumber','carrier', 'status', 'creationDate', 'updatedIn'],
+        fields: ['id', 'trackingNumber','carrier', 'delivered', 'orderId', 'invoiceId', 'externalLink', 'createdIn', 'updatedIn'],
         where: `id=${args.id}`,
         pagination: {
           page: 1,

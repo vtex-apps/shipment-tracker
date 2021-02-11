@@ -1,8 +1,9 @@
-query GetInteractions($shipmentId: String!) {
+query GetInteractions($shipmentId: String) {
   interactions(shipmentId: $shipmentId) {
     id
-    shipmentId
     interaction
-    status
+    delivered
+    createdIn
+    updatedIn
   }
 }
