@@ -10,6 +10,7 @@ import {
 import { Clients } from './clients'
 import { resolvers } from './resolvers'
 import { orderStatusChange } from './events/orderStatusChange'
+import { updateTracking } from './routes/updateTracking'
 
 const TIMEOUT_MS = 800
 
@@ -22,7 +23,6 @@ const clients: ClientsConfig<Clients> = {
     },
   },
 }
-
 declare global {
   // We declare a global Context type just to avoid re-writing ServiceContext<Clients, State> in every handler and resolver
   type Context = ServiceContext<Clients>
@@ -47,5 +47,8 @@ export default new Service<Clients, RecorderState, ParamsContext>({
   },
   events: {
     orderStatusChange,
+  },
+  routes: {
+    updateTracking,
   },
 })

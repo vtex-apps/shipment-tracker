@@ -63,6 +63,13 @@
         "host": "portal.vtexcommercestable.com.br",
         "path": "/api/*"
       }
+    },
+    {
+      "name": "outbound-access",
+      "attrs": {
+        "host": "secure.shippingapis.com",
+        "path": "/*"
+      }
     }
   ],
   "$schema": "https://raw.githubusercontent.com/vtex/node-vtex-api/master/gen/manifest.schema"
