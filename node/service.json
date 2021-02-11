@@ -6,6 +6,12 @@
   "minReplicas": 2,
   "maxReplicas": 100,
   "workers": 1,
+  "routes": {
+    "updateTracking": {
+      "path": "/_v/api/tracking/update",
+      "public": true
+    }
+  },
   "events": {
     "orderStatusChange": {
       "sender": "vtex.orders-broadcast",

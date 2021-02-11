@@ -1,7 +1,9 @@
 import { IOClients } from '@vtex/api'
 
-import OMSClient from './omsClient'
+import OMSClient from './oms'
 import RequestHub from '../utils/Hub'
+import SchedulerClient from './scheduler'
+import USPSClient from './usps'
 
 // Extend the default IOClients implementation with our own custom clients.
 export class Clients extends IOClients {
@@ -11,5 +13,13 @@ export class Clients extends IOClients {
 
   public get oms() {
     return this.getOrSet('orders', OMSClient)
+  }
+
+  public get scheduler() {
+    return this.getOrSet('scheduler', SchedulerClient)
+  }
+
+  public get usps() {
+    return this.getOrSet('usps', USPSClient)
   }
 }

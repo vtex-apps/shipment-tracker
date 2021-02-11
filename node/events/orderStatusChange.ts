@@ -4,7 +4,7 @@ export async function orderStatusChange(ctx: StatusChangeContext) {
   const {
     body,
     clients: { oms },
-    // clients: { oms, apps },
+    // vtex: { logger },
   } = ctx
 
   // const app: string = getAppId()
@@ -25,7 +25,6 @@ export async function orderStatusChange(ctx: StatusChangeContext) {
   const { packages } = order.packageAttachment || []
 
   for (const shipment of packages) {
-    // identify
     const carrier = getCarrier(shipment)
 
     if (!carrier) {
@@ -33,11 +32,7 @@ export async function orderStatusChange(ctx: StatusChangeContext) {
     }
 
     console.log(carrier)
-    // save tracking
-    // {
-    //   trackingNum: shipment.trackingNumber,
-    //   carrier,
-    //   status
-    // }
+
+    // save tracking masterdata
   }
 }
