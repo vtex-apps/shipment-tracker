@@ -15,7 +15,7 @@ export default class USPSClient extends ExternalClient {
     xml: string
     // vtexAppKey: string,
     // vtexAppToken: string
-  ): Promise<any> {
+  ): Promise<string> {
     return this.http.get(`/ShippingAPI.dll?API=TrackV2&XML=${xml}`, {
       headers: {
         // 'X-VTEX-API-AppKey': vtexAppKey,

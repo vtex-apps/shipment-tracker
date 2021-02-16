@@ -1,3 +1,4 @@
+import { resolvers } from '../resolvers'
 import { getCarrier } from '../utils/getCarrier'
 
 export async function orderStatusChange(ctx: StatusChangeContext) {
@@ -6,11 +7,6 @@ export async function orderStatusChange(ctx: StatusChangeContext) {
     clients: { oms },
     // vtex: { logger },
   } = ctx
-
-  // const app: string = getAppId()
-  // const settings = await apps.getAppSettings(app)
-
-  console.log('event', body)
 
   if (body.domain === 'Marketplace') {
     return
@@ -24,15 +20,35 @@ export async function orderStatusChange(ctx: StatusChangeContext) {
 
   const { packages } = order.packageAttachment || []
 
-  for (const shipment of packages) {
-    const carrier = getCarrier(shipment)
+  const addShipments = packages.reduce(
+    (shipments: Array<Promise<string>>, shipment) => {
+      const carrier = getCarrier(shipment)
+      const externalLink = shipment.trackingUrl // add trackingUrl validation
 
-    if (!carrier) {
-      console.log('unidentified carrier')
-    }
+      if (!carrier) {
+        return shipments
+      }
 
-    console.log(carrier)
+      const data = {
+        trackingNumber: shipment.trackingNumber,
+        carrier,
+        delivered: false,
+        orderId: order.orderId,
+        invoiceId: shipment.invoiceNumber,
+        externalLink: externalLink ?? '',
+      }
 
-    // save tracking masterdata
+      shipments.push(resolvers.Mutation.addShipment(null, data, ctx))
+
+      return shipments
+    },
+    []
+  )
+
+  try {
+    const success = await Promise.all(addShipments)
+    console.log(success)
+  } catch (err) {
+    console.log(err)
   }
 }

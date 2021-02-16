@@ -1,3 +1,5 @@
+import { CARRIERS } from '../typings/constants'
+
 const USPS_REGEX = [
   '^(94|93|92|94|95)[0-9]{20}$',
   '^(94|93|92|94|95)[0-9]{22}$',
@@ -25,23 +27,23 @@ const isUPS = (number: string) => {
   return upsTest.test(number)
 }
 
-export const getCarrier = (shipment: Package) => {
+export const getCarrier = (shipment: Package): Carrier | null => {
   const { courier, trackingNumber } = shipment
 
   if (courier.includes('USPS')) {
-    return 'USPS'
+    return CARRIERS.USPS
   }
 
   if (courier.includes('UPS')) {
-    return 'UPS'
+    return CARRIERS.UPS
   }
 
   if (isUSPS(trackingNumber)) {
-    return 'USPS'
+    return CARRIERS.USPS
   }
 
   if (isUPS(trackingNumber)) {
-    return 'UPS'
+    return CARRIERS.UPS
   }
 
   return null

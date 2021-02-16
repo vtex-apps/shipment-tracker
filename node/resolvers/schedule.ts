@@ -1,5 +1,11 @@
+import { CreateSchedulerResponse } from '../clients/scheduler'
+
 export const schedule = {
-  create: async (_: any, _args: any, ctx: Context): Promise<any> => {
+  create: async (
+    _: any,
+    _args: any,
+    ctx: Context
+  ): Promise<CreateSchedulerResponse> => {
     const {
       clients: { scheduler },
       // clients: { scheduler, apps },
