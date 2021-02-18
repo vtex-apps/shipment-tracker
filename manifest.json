@@ -70,6 +70,20 @@
         "host": "secure.shippingapis.com",
         "path": "/*"
       }
+    },
+    {
+      "name": "outbound-access",
+      "attrs": {
+        "host": "wsbeta.fedex.com",
+        "path": "/*"
+      }
+    },
+    {
+      "name": "outbound-access",
+      "attrs": {
+        "host": "wwwcie.ups.com",
+        "path": "/*"
+      }
     }
   ],
   "$schema": "https://raw.githubusercontent.com/vtex/node-vtex-api/master/gen/manifest.schema"

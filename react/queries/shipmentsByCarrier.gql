@@ -8,6 +8,6 @@ query ShipmentsByCarrier($carrier: String) {
     invoiceId
     externalLink
     createdIn
-    updatedIn
+    lastInteractionDate
   }
 }

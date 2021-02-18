@@ -25,6 +25,7 @@ type Mutation {
     orderId: String
     invoiceId: String
     externalLink: String
+    lastInteractionDate: String
   ): String
   addInteraction(
     shipmentId: String
@@ -47,7 +48,7 @@ type Shipment {
   invoiceId: String
   externalLink: String
   createdIn: String
-  updatedIn: String
+  lastInteractionDate: String
 }
 
 type Interaction {

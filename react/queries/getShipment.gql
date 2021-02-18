@@ -8,6 +8,6 @@ query GetShipment($id: String!) {
     invoiceId
     externalLink
     createdIn
-    updatedIn
+    lastInteractionDate
   }
 }
