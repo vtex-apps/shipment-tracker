@@ -1,12 +1,21 @@
 import React, { FC } from 'react'
+import { useQuery } from 'react-apollo'
 import { FormattedMessage } from 'react-intl'
 import { Layout, PageBlock, PageHeader } from 'vtex.styleguide'
 
-import UsersTable from './UsersTable'
+import AppSettings from './queries/appSettings.gql'
+import CarrierTable from './components/CarrierTable'
 
 import './styles.global.css'
 
 const AdminExample: FC = () => {
+  const { data } = useQuery(AppSettings, {
+    variables: {
+      version: process.env.VTEX_APP_VERSION,
+    },
+    ssr: false,
+  })
+
   return (
     <Layout
       pageHeader={
@@ -16,7 +25,7 @@ const AdminExample: FC = () => {
       }
     >
       <PageBlock variation="full">
-        <UsersTable />
+        <CarrierTable />
       </PageBlock>
     </Layout>
   )

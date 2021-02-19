@@ -1,17 +1,17 @@
 {
   "section": "orders",
   "titleId": "admin-example.navigation.label-group",
-  "subSection": "example",
+  "subSection": "shipping tracker",
   "searchKeyWordsHelpers": "admin-example.navigation.search.kws",
   "subSectionItems": [
     {
       "labelId": "admin-example.navigation.label-details",
-      "path": "/admin/example",
+      "path": "/admin/shipping-tracker/settings",
       "searchKeyWordsHelpers": "admin-example.navigation.details.search.kws"
     },
     {
       "labelId": "admin-example.navigation.label-table",
-      "path": "/admin/example",
+      "path": "/admin/shipping-tracker",
       "searchKeyWordsHelpers": "admin-example.navigation.table.search.kws"
     }
   ]

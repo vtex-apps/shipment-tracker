@@ -37,6 +37,13 @@ type Mutation {
 type Config {
   schema: Boolean
   title: String
+  carriers: [Carrier]
+}
+
+type Carrier {
+  name: String
+  active: Boolean
+  path: String
 }
 
 type Shipment {
