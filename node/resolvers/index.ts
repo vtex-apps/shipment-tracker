@@ -123,9 +123,26 @@ export const resolvers = {
         schema: false,
         schemaVersion: null,
         title: 'Shipment Tracking',
+        carriers: {
+          usps: {
+            name: 'USPS',
+            active: false,
+            path: 'usps',
+          },
+          fedex: {
+            name: 'FedEx',
+            active: false,
+            path: 'fedex',
+          },
+          ups: {
+            name: 'UPS',
+            active: false,
+            path: 'ups',
+          },
+        },
       }
 
-      if (!settings.title) {
+      if (!settings.title || !settings.carriers) {
         settings = defaultSettings
       }
 
@@ -162,6 +179,9 @@ export const resolvers = {
 
         await apps.saveAppSettings(app, settings)
       }
+
+      const carriers = Object.values(settings.carriers)
+      settings.carriers = carriers
 
       return settings
     },

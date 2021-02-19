@@ -15,16 +15,8 @@ export default class OMSClient extends JanusClient {
     })
   }
 
-  public async getOrder(
-    orderId: string
-    // vtexAppKey: string,
-    // vtexAppToken: string
-  ): Promise<OMSOrder> {
+  public async getOrder(orderId: string): Promise<OMSOrder> {
     return this.http.get(`/api/oms/pvt/orders/${orderId}`, {
-      headers: {
-        // 'X-VTEX-API-AppKey': vtexAppKey,
-        // 'X-VTEX-API-AppToken': vtexAppToken,
-      },
       metric: 'order-get',
     })
   }

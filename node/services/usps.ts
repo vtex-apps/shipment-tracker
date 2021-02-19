@@ -16,8 +16,8 @@ export const uspsTracking = async (ctx: Context) => {
   const appId = process.env.VTEX_APP_ID
   const settings = appId && (await apps.getAppSettings(appId))
 
-  const userId = `"${settings.uspsUserId}"`
-  const clientIp = '111.1.1'
+  const userId = `"${settings.carriers.usps.userId}"`
+  const clientIp = ctx.request.ip
   const sourceId = account
   const pageSize = USPS_API_LIMIT
   let page = 1
