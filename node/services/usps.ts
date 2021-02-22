@@ -2,7 +2,7 @@
 import { parseString } from 'xml2js'
 
 import { resolvers } from '../resolvers'
-import { CARRIERS } from '../typings/constants'
+import { CARRIERS } from '../constants'
 
 const USPS_API_LIMIT = 10
 const USPS_DELIVERED_STATUS = 'Delivered'
@@ -35,19 +35,22 @@ export const uspsTracking = async (settings: UspsConfig, ctx: Context) => {
 
       const xmlResponse = await usps.getTracking(xml)
 
-      let promises: Array<Promise<string | void>> = []
+      let updates: Array<Promise<string | void | OMSOrderTracking>> = []
 
       parseString(xmlResponse, async (_err, response: UspsParsedResult) => {
         const trackingItems = response.TrackResponse.TrackInfo
 
-        promises = trackingItems.reduce(
-          (interactions: Array<Promise<string | void>>, trackingInfo) => {
+        updates = trackingItems.reduce(
+          (
+            promises: Array<Promise<string | void | OMSOrderTracking>>,
+            trackingInfo
+          ) => {
             const matchedShipment = shipments.find((shipment) => {
               return shipment.trackingNumber === trackingInfo?.$.ID
             })
 
             if (!matchedShipment?.id) {
-              return interactions
+              return promises
             }
 
             const shipmentId = matchedShipment.id
@@ -55,7 +58,7 @@ export const uspsTracking = async (settings: UspsConfig, ctx: Context) => {
               matchedShipment.lastInteractionDate
             )
             const [status] = trackingInfo.StatusCategory
-            const delivered = status === USPS_DELIVERED_STATUS
+            const isDelivered = status === USPS_DELIVERED_STATUS
             const [trackSummary] = trackingInfo.TrackSummary
 
             const trackingDate = new Date(
@@ -63,38 +66,59 @@ export const uspsTracking = async (settings: UspsConfig, ctx: Context) => {
             )
 
             if (trackingDate <= lastShipmentUpdate) {
-              return interactions
+              return promises
             }
+
+            const [city] = trackSummary.EventCity
+            const [state] = trackSummary.EventState
+            const [description] = trackSummary.Event
+            const [date] = trackSummary.EventDate
+            const event = {
+              city,
+              state,
+              description,
+              date,
+            }
+
+            promises.push(
+              oms.updateOrderTracking(
+                matchedShipment.orderId,
+                matchedShipment.invoiceId,
+                {
+                  isDelivered,
+                  events: [event],
+                }
+              )
+            )
 
             const interaction: AddInteractionArgs = {
               shipmentId,
-              delivered,
+              delivered: isDelivered,
             }
 
-            interactions.push(
+            promises.push(
               resolvers.Mutation.addInteraction(null, interaction, ctx)
             )
-
-            // TODO update orderAPI
 
             const shipment = {
               id: matchedShipment.id,
               lastInteractionDate: trackingDate.toUTCString(),
             }
 
-            interactions.push(
+            promises.push(
               resolvers.Mutation.updateShipment(null, shipment, ctx)
             )
 
-            return interactions
+            return promises
           },
           []
         )
       })
 
       try {
-        if (promises) {
-          await Promise.all(promises)
+        if (updates) {
+          const result = await Promise.allSettled(updates)
+          console.log('promise all', result)
         }
       } catch (err) {
         console.log('err', err)

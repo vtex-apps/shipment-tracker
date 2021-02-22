@@ -13,17 +13,9 @@ export default class FedExClient extends ExternalClient {
     })
   }
 
-  public async getTracking(
-    url: string,
-    body: string
-    // vtexAppKey: string,
-    // vtexAppToken: string
-  ): Promise<string> {
+  public async getTracking(url: string, body: string): Promise<string> {
     return this.http.post(url, body, {
-      headers: {
-        // 'X-VTEX-API-AppKey': vtexAppKey,
-        // 'X-VTEX-API-AppToken': vtexAppToken,
-      },
+      headers: {},
     })
   }
 }

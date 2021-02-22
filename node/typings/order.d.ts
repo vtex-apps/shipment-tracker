@@ -5,6 +5,12 @@ interface OMSOrder {
   packageAttachment: PackageAttachment
 }
 
+interface OMSOrderTracking {
+  date: string
+  orderId: string
+  receipt: string
+}
+
 interface PackageAttachment {
   packages: Package[]
 }
@@ -33,4 +39,16 @@ interface Item {
   price: number
   description: string | null
   unitMultiplier: number
+}
+
+interface TrackingUpdate {
+  isDelivered: boolean
+  events?: TrackingEvent[]
+}
+
+interface TrackingEvent {
+  city?: string
+  state?: string
+  description?: string
+  date?: string
 }

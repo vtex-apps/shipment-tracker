@@ -20,4 +20,18 @@ export default class OMSClient extends JanusClient {
       metric: 'order-get',
     })
   }
+
+  public async updateOrderTracking(
+    orderId: string,
+    invoiceId: string,
+    update: TrackingUpdate
+  ): Promise<OMSOrderTracking> {
+    return this.http.put(
+      `/api/oms/pvt/orders/${orderId}/invoice/${invoiceId}/tracking`,
+      update,
+      {
+        metric: 'order-tracking-put',
+      }
+    )
+  }
 }

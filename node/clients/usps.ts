@@ -1,26 +1,21 @@
 import { ExternalClient, InstanceOptions, IOContext } from '@vtex/api'
 
+const TEN_SECONDS = 10 * 1000
+
 export default class USPSClient extends ExternalClient {
   constructor(context: IOContext, options?: InstanceOptions) {
-    super('https://secure.shippingapis.com', context, {
+    super('http://secure.shippingapis.com', context, {
       ...options,
       headers: {
         'X-Vtex-Use-Https': 'true',
         'Proxy-Authorization': context.authToken,
       },
+      timeout: TEN_SECONDS,
     })
   }
 
-  public async getTracking(
-    xml: string
-    // vtexAppKey: string,
-    // vtexAppToken: string
-  ): Promise<string> {
+  public async getTracking(xml: string): Promise<string> {
     return this.http.get(`/ShippingAPI.dll?API=TrackV2&XML=${xml}`, {
-      headers: {
-        // 'X-VTEX-API-AppKey': vtexAppKey,
-        // 'X-VTEX-API-AppToken': vtexAppToken,
-      },
       metric: 'usps-get-tracking',
     })
   }
