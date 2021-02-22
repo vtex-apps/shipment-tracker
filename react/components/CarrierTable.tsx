@@ -1,5 +1,11 @@
 import React, { useEffect, useState } from 'react'
-import { Table, Tag, Button, PageBlock } from 'vtex.styleguide'
+import {
+  Table,
+  Tag,
+  IconEdit,
+  PageBlock,
+  ButtonWithIcon,
+} from 'vtex.styleguide'
 import { Link } from 'vtex.render-runtime'
 import { useQuery } from 'react-apollo'
 
@@ -28,8 +34,11 @@ const schema = {
         return (
           <div className="flex">
             <div className="mr2">
-              <Link page={`admin.app.shipping-tracker-${cellData}`}>
-                <Button variation="secondary">Edit</Button>
+              <Link
+                page={`admin.app.shipping-tracker-carrier`}
+                params={{ id: cellData }}
+              >
+                <ButtonWithIcon icon={<IconEdit />} variation="tertiary" />
               </Link>
             </div>
           </div>
@@ -62,11 +71,7 @@ const CarrierTable = () => {
 
   return (
     <div>
-      <PageBlock
-        variation="full"
-        title="Section"
-        subtitle="Some explanation for your section. It can be used as a helper text to guide user troughout the interface. "
-      >
+      <PageBlock variation="full" title="Carriers">
         <Table fullWidth schema={schema} items={carriers} />
       </PageBlock>
     </div>

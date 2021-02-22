@@ -1,13 +1,15 @@
 import React, { ChangeEvent, FC, useEffect, useState } from 'react'
 import { useMutation, useQuery } from 'react-apollo'
+import { useRuntime } from 'vtex.render-runtime'
 import { Layout, PageHeader, Button, PageBlock, Input } from 'vtex.styleguide'
 
-import AppSettings from './queries/appSettings.gql'
-import SaveAppSettings from './queries/saveAppSettings.gql'
+import AppSettings from '../queries/appSettings.gql'
+import SaveAppSettings from '../queries/saveAppSettings.gql'
 
-import './styles.global.css'
+import '../styles.global.css'
 
-const AdminExampleDetail: FC = () => {
+const UspsDetail: FC = () => {
+  const { navigate } = useRuntime()
   const [appSettings, setAppSettings] = useState<any>(null)
   const [fields, setFields] = useState({
     userId: '',
@@ -57,7 +59,15 @@ const AdminExampleDetail: FC = () => {
   return (
     <Layout
       pageHeader={
-        <PageHeader title="Page title fullwidth" linkLabel="A link">
+        <PageHeader
+          title={appSettings?.carriers.usps.name}
+          linkLabel="BACK TO PREVIOUS PAGE"
+          onLinkClick={() =>
+            navigate({
+              page: 'admin.app.shipping-tracker',
+            })
+          }
+        >
           <Button onClick={() => handleSave()} variation="primary">
             Save
           </Button>
@@ -80,4 +90,4 @@ const AdminExampleDetail: FC = () => {
   )
 }
 
-export default AdminExampleDetail
+export default UspsDetail

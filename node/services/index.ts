@@ -5,23 +5,28 @@ import { upsTracking } from './ups'
 export const trackingService = {
   update: async (ctx: Context) => {
     const appId = process.env.VTEX_APP_ID
-    const settings = appId && (await ctx.clients.apps.getAppSettings(appId))
-    const { carriers } = settings
+    const settings =
+      appId && ((await ctx.clients.apps.getAppSettings(appId)) as AppSettings)
 
-    const hasUsps = carriers.usps.active
-    const hasFedex = carriers.fedex.active
-    const hasUps = carriers.ups.active
-
-    if (hasUsps) {
-      uspsTracking(ctx)
+    if (!settings) {
+      console.log('no settings config')
+      return
     }
 
-    if (hasFedex) {
-      fedexTracking(ctx)
+    const {
+      carriers: { usps, ups, fedex },
+    } = settings
+
+    if (usps.active) {
+      uspsTracking(usps, ctx)
     }
 
-    if (hasUps) {
-      upsTracking(ctx)
+    if (fedex.active) {
+      fedexTracking(fedex, ctx)
+    }
+
+    if (ups.active) {
+      upsTracking(ups, ctx)
     }
   },
 }

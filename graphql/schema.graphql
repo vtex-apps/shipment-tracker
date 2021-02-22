@@ -6,6 +6,7 @@ type Query {
   interactions(shipmentId: String): [Interaction]
     @cacheControl(scope: PRIVATE, maxAge: Medium)
   shipment(id: String): Shipment @cacheControl(scope: PRIVATE, maxAge: Medium)
+  viewSchedule: ViewSchedule @cacheControl(scope: PRIVATE)
 }
 
 type Mutation {
@@ -32,6 +33,8 @@ type Mutation {
     interaction: String
     delivered: Boolean
   ): String
+  createSchedule: Schedule
+  deleteSchedule: Boolean
 }
 
 type Config {
@@ -65,4 +68,13 @@ type Interaction {
   delivered: Boolean
   createdIn: String
   updatedIn: String
+}
+
+type Schedule {
+  nextExecution: String
+}
+
+type ViewSchedule {
+  lastInteractionIn: String
+  nextExecution: String
 }

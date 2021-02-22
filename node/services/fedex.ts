@@ -1,8 +1,7 @@
 import { parseString } from 'xml2js'
 import { resolvers } from '../resolvers'
 
-
-export const fedexTracking = async (ctx: Context) => {
+export const fedexTracking = async (settings: FedexConfig, ctx: Context) => {
   const {
     clients: { fedex },
   } = ctx
@@ -10,14 +9,8 @@ export const fedexTracking = async (ctx: Context) => {
   // Update to reflect user settings
   // URL needs to be updated for production
 
-  // const appId = process.env.VTEX_APP_ID
-  // const settings = appId && (await apps.getAppSettings(appId))
-
   const url = `https://wsbeta.fedex.com:443/web-services`
-  const testKey = 'dIi5YaI9g9OAAvZe'
-  const accountNumber = '510087240'
-  const meterNumber = '100506821'
-  const password = 'yKdWNPN8GVR7dlVuqccu2bCe6'
+  const { key, accountNumber, meterNumber, password } = settings
   const testTrackingNum = '123456789012'
 
   const args = { carrier: 'FEDEX' }
@@ -35,11 +28,11 @@ export const fedexTracking = async (ctx: Context) => {
       <v16:TrackRequest>
       <v16:WebAuthenticationDetail>
       <v16:ParentCredential>
-      <v16:Key>${testKey}</v16:Key>
+      <v16:Key>${key}</v16:Key>
       <v16:Password>${password}</v16:Password>
       </v16:ParentCredential>
       <v16:UserCredential>
-      <v16:Key>${testKey}</v16:Key>
+      <v16:Key>${key}</v16:Key>
       <v16:Password>${password}</v16:Password>
       </v16:UserCredential>
       </v16:WebAuthenticationDetail>

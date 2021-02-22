@@ -7,16 +7,13 @@ import { CARRIERS } from '../typings/constants'
 const USPS_API_LIMIT = 10
 const USPS_DELIVERED_STATUS = 'Delivered'
 
-export const uspsTracking = async (ctx: Context) => {
+export const uspsTracking = async (settings: UspsConfig, ctx: Context) => {
   const {
     vtex: { account },
-    clients: { apps, usps },
+    clients: { usps, oms },
   } = ctx
 
-  const appId = process.env.VTEX_APP_ID
-  const settings = appId && (await apps.getAppSettings(appId))
-
-  const userId = `"${settings.carriers.usps.userId}"`
+  const userId = `"${settings.userId}"`
   const clientIp = ctx.request.ip
   const sourceId = account
   const pageSize = USPS_API_LIMIT

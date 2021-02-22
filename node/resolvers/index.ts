@@ -110,6 +110,30 @@ const defaultHeaders = (authToken: string) => ({
 
 export const resolvers = {
   Query: {
+    viewSchedule: async (
+      _: void,
+      _args: void,
+      ctx: Context
+    ): Promise<ViewSchedulerGraphQL | null> => {
+      const {
+        clients: { scheduler },
+      } = ctx
+
+      let response
+
+      try {
+        response = await scheduler.viewSchedule()
+      } catch (_err) {
+        return null
+      }
+
+      const { NextExecution: nextExecution, lastInteractionIn } = response
+
+      return {
+        nextExecution,
+        lastInteractionIn,
+      }
+    },
     config: async (_: any, __: any, ctx: any) => {
       const {
         vtex: { account, authToken },
@@ -315,8 +339,6 @@ export const resolvers = {
         clients: { masterdata },
       } = ctx
 
-      console.log(args)
-
       return masterdata
         .createDocument({
           dataEntity: 'shipment',
@@ -324,7 +346,6 @@ export const resolvers = {
           schema: SCHEMA_VERSION,
         })
         .then((res) => {
-          console.log('res', res)
           return res.DocumentId
         })
         .catch((err: any) => {
@@ -350,8 +371,7 @@ export const resolvers = {
           fields,
           schema: SCHEMA_VERSION,
         })
-        .then((res) => {
-          console.log('res', res)
+        .then((_res) => {
           return id
         })
         .catch((err: any) => {
@@ -371,12 +391,50 @@ export const resolvers = {
           schema: SCHEMA_VERSION,
         })
         .then((res) => {
-          console.log('created', res)
           return res.DocumentId
         })
         .catch((err: any) => {
           return err.response.message
         })
+    },
+    createSchedule: async (
+      _: void,
+      _args: void,
+      ctx: Context
+    ): Promise<CreateSchedulerResponse> => {
+      const {
+        clients: { scheduler },
+        vtex: { workspace, account },
+      } = ctx
+
+      const schedulerData = {
+        id: `vtex-shipping-tracker`,
+        scheduler: {
+          expression: '0 6 * * *',
+          endDate: '2029-12-30T23:29:00',
+        },
+        request: {
+          method: 'GET',
+          uri: `https://${workspace}--${account}.myvtex.com/_v/api/tracking/update`,
+        },
+      }
+
+      const response = await scheduler.createSchedule(schedulerData)
+
+      return response
+    },
+    deleteSchedule: async (
+      _: void,
+      _args: void,
+      ctx: Context
+    ): Promise<boolean> => {
+      const {
+        clients: { scheduler },
+      } = ctx
+
+      await scheduler.deleteSchedule()
+
+      return true
     },
   },
 }

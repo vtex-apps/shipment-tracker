@@ -1,15 +1,12 @@
 import { resolvers } from '../resolvers'
 
 
-export const upsTracking = async (ctx: Context) => {
+export const upsTracking = async (settings: UpsConfig, ctx: Context) => {
   const {
     clients: { ups },
   } = ctx
 
-  // const appId = process.env.VTEX_APP_ID
-  // const settings = appId && (await apps.getAppSettings(appId))
-
-  const testKey = 'FD94AEEED2173F72'
+  const { key } = settings
   const testTrackingNum = '572254454'
 
   const args = { carrier: 'UPS' }
@@ -19,7 +16,7 @@ export const upsTracking = async (ctx: Context) => {
     const trackingNum = shipment.trackingNumber
     console.log(trackingNum)
 
-    const response:any = await ups.getTracking(testTrackingNum, testKey)
+    const response:any = await ups.getTracking(testTrackingNum, key)
 
     if (response.trackResponse.shipment[0].warnings) {
       continue

@@ -1,0 +1,5 @@
+mutation CreateSchedule {
+  createSchedule {
+    nextExecution
+  }
+}

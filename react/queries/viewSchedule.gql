@@ -1,0 +1,6 @@
+query ViewSchedule {
+  viewSchedule {
+    lastInteractionIn
+    nextExecution
+  }
+}

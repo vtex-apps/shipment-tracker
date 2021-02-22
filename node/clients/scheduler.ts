@@ -19,7 +19,7 @@ export default class SchedulerClient extends JanusClient {
   }
 
   public createSchedule = (
-    schedulerData: CreateSchedulerData
+    schedulerData: CreateSchedulerArgs
   ): Promise<CreateSchedulerResponse> => {
     return this.http.post(
       routes.scheduler(this.context.workspace, this.context.account),
@@ -28,29 +28,17 @@ export default class SchedulerClient extends JanusClient {
     )
   }
 
-  public viewSchedule = async () => {
+  public viewSchedule = async (): Promise<ViewSchedulerResponse> => {
     return this.http.get(
-      routes.getSchedule(this.context.workspace, this.context.account)
+      routes.getSchedule(this.context.workspace, this.context.account),
+      { metric: 'scheduler-view-schedule' }
     )
   }
 
   public deleteSchedule = async () => {
     return this.http.delete(
-      routes.getSchedule(this.context.workspace, this.context.account)
+      routes.getSchedule(this.context.workspace, this.context.account),
+      { metric: 'scheduler-delete-schedule' }
     )
   }
-}
-
-export interface CreateSchedulerData {
-  id: string
-  scheduler: { expression: string; endDate: string }
-  request: {
-    uri: string
-    method: string
-  }
-}
-
-export interface CreateSchedulerResponse {
-  endpoint: string
-  nextExecution: string
 }
