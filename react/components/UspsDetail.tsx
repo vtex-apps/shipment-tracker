@@ -10,6 +10,7 @@ import '../styles.global.css'
 
 const UspsDetail: FC = () => {
   const { navigate } = useRuntime()
+  const [loading, setLoading] = useState(false)
   const [appSettings, setAppSettings] = useState<any>(null)
   const [fields, setFields] = useState({
     userId: '',
@@ -19,7 +20,6 @@ const UspsDetail: FC = () => {
     variables: {
       version: process.env.VTEX_APP_VERSION,
     },
-    ssr: false,
   })
 
   useEffect(() => {
@@ -36,6 +36,8 @@ const UspsDetail: FC = () => {
   }, [data])
 
   const handleSave = async () => {
+    setLoading(true)
+
     if (!appSettings) {
       return
     }
@@ -54,6 +56,8 @@ const UspsDetail: FC = () => {
         settings: JSON.stringify(settings),
       },
     })
+
+    setLoading(false)
   }
 
   return (
@@ -68,7 +72,11 @@ const UspsDetail: FC = () => {
             })
           }
         >
-          <Button onClick={() => handleSave()} variation="primary">
+          <Button
+            isLoading={loading}
+            onClick={() => handleSave()}
+            variation="primary"
+          >
             Save
           </Button>
         </PageHeader>

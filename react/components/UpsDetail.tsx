@@ -10,6 +10,7 @@ import '../styles.global.css'
 
 const UpsDetail: FC = () => {
   const { navigate } = useRuntime()
+  const [loading, setLoading] = useState(false)
   const [appSettings, setAppSettings] = useState<any>(null)
   const [fields, setFields] = useState({
     key: '',
@@ -35,6 +36,7 @@ const UpsDetail: FC = () => {
   }, [data])
 
   const handleSave = async () => {
+    setLoading(true)
     if (!appSettings) {
       return
     }
@@ -53,6 +55,7 @@ const UpsDetail: FC = () => {
         settings: JSON.stringify(settings),
       },
     })
+    setLoading(false)
   }
 
   return (
@@ -67,7 +70,11 @@ const UpsDetail: FC = () => {
             })
           }
         >
-          <Button onClick={() => handleSave()} variation="primary">
+          <Button
+            isLoading={loading}
+            onClick={() => handleSave()}
+            variation="primary"
+          >
             Save
           </Button>
         </PageHeader>
