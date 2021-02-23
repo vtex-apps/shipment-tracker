@@ -18,11 +18,12 @@ export const uspsTracking = async (settings: UspsConfig, ctx: Context) => {
   const sourceId = account
   const pageSize = USPS_API_LIMIT
   let page = 1
-  let returned = 0
+  // let returned = 0
 
   do {
     const args = { carrier: CARRIERS.USPS, page, pageSize }
     const shipments = await resolvers.Query.shipmentsByCarrier(null, args, ctx)
+    console.log('shipments amount', shipments.length)
 
     if (shipments.length) {
       const trackingNumbersXml = shipments.map((shipment) => {
@@ -49,14 +50,17 @@ export const uspsTracking = async (settings: UspsConfig, ctx: Context) => {
               return shipment.trackingNumber === trackingInfo?.$.ID
             })
 
+            console.log('matchedShipment', matchedShipment)
+            console.log('trackingInfo', trackingInfo.TrackSummary)
+
             if (!matchedShipment?.id) {
               return promises
             }
 
             const shipmentId = matchedShipment.id
-            const lastShipmentUpdate = new Date(
-              matchedShipment.lastInteractionDate
-            )
+            const lastShipmentUpdate = matchedShipment.lastInteractionDate
+              ? new Date(matchedShipment.lastInteractionDate)
+              : null
             const [status] = trackingInfo.StatusCategory
             const isDelivered = status === USPS_DELIVERED_STATUS
             const [trackSummary] = trackingInfo.TrackSummary
@@ -65,7 +69,11 @@ export const uspsTracking = async (settings: UspsConfig, ctx: Context) => {
               `${trackSummary.EventDate} ${trackSummary.EventTime}`
             )
 
-            if (trackingDate <= lastShipmentUpdate) {
+            if (
+              !isDelivered &&
+              lastShipmentUpdate &&
+              trackingDate <= lastShipmentUpdate
+            ) {
               return promises
             }
 
@@ -73,21 +81,17 @@ export const uspsTracking = async (settings: UspsConfig, ctx: Context) => {
             const [state] = trackSummary.EventState
             const [description] = trackSummary.Event
             const [date] = trackSummary.EventDate
-            const event = {
-              city,
-              state,
-              description,
-              date,
+            const trackingUpdate = {
+              isDelivered,
+              events: [{ city, state, description, date }],
             }
 
+            console.log('tracking update', trackingUpdate)
             promises.push(
               oms.updateOrderTracking(
                 matchedShipment.orderId,
                 matchedShipment.invoiceId,
-                {
-                  isDelivered,
-                  events: [event],
-                }
+                trackingUpdate
               )
             )
 
@@ -96,6 +100,8 @@ export const uspsTracking = async (settings: UspsConfig, ctx: Context) => {
               delivered: isDelivered,
             }
 
+            console.log('interaction', interaction)
+
             promises.push(
               resolvers.Mutation.addInteraction(null, interaction, ctx)
             )
@@ -103,7 +109,10 @@ export const uspsTracking = async (settings: UspsConfig, ctx: Context) => {
             const shipment = {
               id: matchedShipment.id,
               lastInteractionDate: trackingDate.toUTCString(),
+              delivered: isDelivered,
             }
+
+            console.log('update shipment', shipment)
 
             promises.push(
               resolvers.Mutation.updateShipment(null, shipment, ctx)
@@ -118,7 +127,7 @@ export const uspsTracking = async (settings: UspsConfig, ctx: Context) => {
       try {
         if (updates) {
           const result = await Promise.allSettled(updates)
-          console.log('promise all', result)
+          console.log('promise result', result)
         }
       } catch (err) {
         console.log('err', err)
@@ -126,6 +135,6 @@ export const uspsTracking = async (settings: UspsConfig, ctx: Context) => {
     }
 
     page++
-    returned = shipments.length || 0
-  } while (returned === 10)
+    // returned = shipments.length || 0
+  } while (page === 1)
 }

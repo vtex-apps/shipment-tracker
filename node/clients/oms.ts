@@ -1,15 +1,14 @@
-import type { InstanceOptions, IOContext } from '@vtex/api'
-import { JanusClient } from '@vtex/api'
+import { ExternalClient, InstanceOptions, IOContext } from '@vtex/api'
 
 const FOUR_SECONDS = 4 * 1000
 
-export default class OMSClient extends JanusClient {
-  constructor(ctx: IOContext, options?: InstanceOptions) {
-    super(ctx, {
+export default class OMSClient extends ExternalClient {
+  constructor(context: IOContext, options?: InstanceOptions) {
+    super(`http://${context.account}.vtexcommercestable.com.br`, context, {
       ...options,
       headers: {
         ...options?.headers,
-        VtexIdclientAutCookie: ctx.authToken,
+        VtexIdclientAutCookie: context.authToken,
       },
       timeout: FOUR_SECONDS,
     })

@@ -30,7 +30,9 @@
     },
     "free": true,
     "type": "free",
-    "availableCountries": ["*"]
+    "availableCountries": [
+      "*"
+    ]
   },
   "credentialType": "absolute",
   "policies": [
@@ -45,6 +47,9 @@
     },
     {
       "name": "OMSViewer"
+    },
+    {
+      "name": "ShippingAction"
     },
     {
       "name": "LogisticsViewer"

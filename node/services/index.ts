@@ -13,6 +13,8 @@ export const trackingService = {
       return
     }
 
+    console.log('config', settings)
+
     const {
       carriers: { usps, ups, fedex },
     } = settings
