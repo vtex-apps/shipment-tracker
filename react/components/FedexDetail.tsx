@@ -10,6 +10,7 @@ import '../styles.global.css'
 
 const FedexDetail: FC = () => {
   const { navigate } = useRuntime()
+  const [loading, setLoading] = useState(false)
   const [appSettings, setAppSettings] = useState<any>(null)
   const [saveSettings] = useMutation(SaveAppSettings)
   const [fields, setFields] = useState({
@@ -38,6 +39,7 @@ const FedexDetail: FC = () => {
   }, [data])
 
   const handleSave = async () => {
+    setLoading(true)
     if (!appSettings) {
       return
     }
@@ -56,6 +58,7 @@ const FedexDetail: FC = () => {
         settings: JSON.stringify(settings),
       },
     })
+    setLoading(false)
   }
 
   return (
@@ -70,7 +73,11 @@ const FedexDetail: FC = () => {
             })
           }
         >
-          <Button onClick={() => handleSave()} variation="primary">
+          <Button
+            isLoading={loading}
+            onClick={() => handleSave()}
+            variation="primary"
+          >
             Save
           </Button>
         </PageHeader>

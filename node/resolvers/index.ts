@@ -129,6 +129,8 @@ export const resolvers = {
 
       const { NextExecution: nextExecution, lastInteractionIn } = response
 
+      console.log('view schedule', response)
+
       return {
         nextExecution,
         lastInteractionIn,
@@ -274,7 +276,7 @@ export const resolvers = {
         clients: { masterdata },
       } = ctx
 
-      const result: any = await masterdata.searchDocuments({
+      const result = await masterdata.searchDocuments({
         dataEntity: 'shipment',
         fields: [
           'id',
@@ -295,6 +297,8 @@ export const resolvers = {
         },
         schema: SCHEMA_VERSION,
       })
+
+      console.log('create', result)
 
       return result
     },
@@ -323,7 +327,7 @@ export const resolvers = {
           'createdIn',
           'updatedIn',
         ],
-        where: `carrier=${carrier}`,
+        where: `carrier=${carrier} AND delivered=false`,
         pagination: {
           page,
           pageSize,
@@ -426,6 +430,8 @@ export const resolvers = {
 
       const response = await scheduler.createSchedule(schedulerData)
 
+      console.log('create schedule', response)
+
       return response
     },
     deleteSchedule: async (
@@ -437,7 +443,9 @@ export const resolvers = {
         clients: { scheduler },
       } = ctx
 
-      await scheduler.deleteSchedule()
+      const response = await scheduler.deleteSchedule()
+
+      console.log('delete schedule', response)
 
       return true
     },

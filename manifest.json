@@ -49,6 +49,9 @@
       "name": "OMSViewer"
     },
     {
+      "name": "ShippingAction"
+    },
+    {
       "name": "LogisticsViewer"
     },
     {

@@ -14,7 +14,11 @@ export const trackingService = {
       return
     }
 
+<<<<<<< HEAD
     console.log(settings)
+=======
+    console.log('config', settings)
+>>>>>>> 56ebd8d565efe9dae34e7287a368a5473fb10524
 
     const {
       carriers: {

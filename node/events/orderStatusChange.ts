@@ -8,17 +8,22 @@ export async function orderStatusChange(ctx: StatusChangeContext) {
     // vtex: { logger },
   } = ctx
 
+  console.log('event', body)
+
   if (body.domain === 'Marketplace') {
     return
   }
 
   const order = await oms.getOrder(body.orderId)
+  console.log('event order', order)
 
   if (!order) {
     return
   }
 
   const { packages } = order.packageAttachment || []
+
+  console.log('packages', packages)
 
   const addShipments = packages.reduce(
     (shipments: Array<Promise<string>>, shipment) => {
@@ -38,6 +43,8 @@ export async function orderStatusChange(ctx: StatusChangeContext) {
         externalLink: externalLink ?? '',
       }
 
+      console.log('addShipment data', data)
+
       shipments.push(resolvers.Mutation.addShipment(null, data, ctx))
 
       return shipments
@@ -46,8 +53,8 @@ export async function orderStatusChange(ctx: StatusChangeContext) {
   )
 
   try {
-    const success = await Promise.all(addShipments)
-    console.log(success)
+    const result = await Promise.all(addShipments)
+    console.log('promise result', result)
   } catch (err) {
     console.log(err)
   }

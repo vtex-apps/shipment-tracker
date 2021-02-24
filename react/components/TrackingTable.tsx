@@ -19,10 +19,10 @@ const TrackingTable = () => {
   const getSchema = () => {
     return {
       properties: {
-        invoiceId: {
+        orderId: {
           title: 'Order',
         },
-        orderId: {
+        invoiceId: {
           title: 'Invoice',
           cellRenderer: ({ cellData }: any) => {
             return <span className="ws-normal">{cellData}</span>
@@ -40,10 +40,20 @@ const TrackingTable = () => {
             return <span className={`ws-normal`}>{cellData}</span>
           },
         },
+        trackingNumber: {
+          title: 'Tracking Number',
+          cellRenderer: ({ cellData }: any) => {
+            return <span className={`ws-normal`}>{cellData}</span>
+          },
+        },
         delivered: {
           title: 'Delivered',
           cellRenderer: ({ cellData }: any) => {
-            return <span className={`ws-normal`}>{cellData}</span>
+            return (
+              <span className={`ws-normal`}>
+                {cellData ? 'Delivered' : 'In Transit'}
+              </span>
+            )
           },
         },
       },
