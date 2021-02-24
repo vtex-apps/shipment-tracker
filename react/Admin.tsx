@@ -13,10 +13,10 @@ import {
 import ViewSchedule from './queries/viewSchedule.gql'
 import DeleteSchedule from './queries/deleteSchedule.gql'
 import CreateSchedule from './queries/createSchedule.gql'
-import CarrierTable from './components/CarrierTable'
+import TrackingTable from './components/TrackingTable'
+import Carriers from './components/Carriers'
 
 import './styles.global.css'
-import TrackingTable from './components/TrackingTable'
 
 const AdminExample: FC = () => {
   const [activeTab, setActiveTab] = useState<number>(1)
@@ -112,7 +112,7 @@ const AdminExample: FC = () => {
               </div>
             </div>
           </PageBlock>
-          <CarrierTable />
+          <Carriers />
         </Tab>
         <Tab
           label="Tracking"

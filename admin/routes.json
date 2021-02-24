@@ -1,8 +1,4 @@
 {
-  "admin.app.shipping-tracker-carrier": {
-    "component": "AdminSettings",
-    "path": "/admin/app/shipping-tracker/:id"
-  },
   "admin.app.shipping-tracker": {
     "component": "Admin",
     "path": "/admin/app/shipping-tracker"

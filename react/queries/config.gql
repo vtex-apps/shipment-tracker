@@ -2,10 +2,5 @@ query Config {
   config {
     title
     schema
-    carriers {
-      name
-      active
-      path
-    }
   }
 }
