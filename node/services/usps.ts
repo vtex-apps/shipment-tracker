@@ -51,7 +51,7 @@ export const uspsTracking = async (settings: UspsConfig, ctx: Context) => {
             })
 
             console.log('matchedShipment', matchedShipment)
-            console.log('trackingInfo', trackingInfo.TrackSummary)
+            console.log('trackingSummary', trackingInfo.TrackSummary)
 
             if (!matchedShipment?.id) {
               return promises
@@ -77,16 +77,34 @@ export const uspsTracking = async (settings: UspsConfig, ctx: Context) => {
               return promises
             }
 
-            const [city] = trackSummary.EventCity
-            const [state] = trackSummary.EventState
-            const [description] = trackSummary.Event
-            const [date] = trackSummary.EventDate
-            const trackingUpdate = {
-              isDelivered,
-              events: [{ city, state, description, date }],
+            let trackingEvents: TrackingEvent[] = []
+
+            if (trackSummary) {
+              const [city] = trackSummary.EventCity
+              const [state] = trackSummary.EventState
+              const [description] = trackSummary.Event
+              const [date] = trackSummary.EventDate
+
+              trackingEvents.push({ city, state, description, date })
             }
 
+            if (trackingInfo.TrackDetail) {
+              trackingEvents = trackingInfo.TrackDetail.map((event) => {
+                const [city] = event.EventCity
+                const [state] = event.EventState
+                const [description] = event.Event
+                const [date] = event.EventDate
+
+                return { city, state, description, date }
+              })
+            }
+
+            const trackingUpdate = {
+              isDelivered,
+              events: trackingEvents.reverse(),
+            }
             console.log('tracking update', trackingUpdate)
+
             promises.push(
               oms.updateOrderTracking(
                 matchedShipment.orderId,

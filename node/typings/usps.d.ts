@@ -33,7 +33,7 @@ interface TrackInfo {
   StatusSummary: [string]
   TABLECODE: [string]
   TrackSummary: [TrackDetail]
-  TrackDetail: TrackDetail[]
+  TrackDetail?: TrackDetail[]
 }
 
 interface TrackDetail {

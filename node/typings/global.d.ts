@@ -2,7 +2,7 @@ interface AppSettings {
   schema: boolean
   schemaVersion: string
   title: string
-  carriers: Carriers
+  carriers?: Carriers
 }
 
 interface Carriers {
@@ -10,12 +10,6 @@ interface Carriers {
   usps: UspsConfig
   ups: UpsConfig
   canadaPost: CanadaPostConfig
-}
-
-interface CarrierConfig {
-  active: boolean
-  name: string
-  path: string
 }
 
 interface FedexConfig extends CarrierConfig {
