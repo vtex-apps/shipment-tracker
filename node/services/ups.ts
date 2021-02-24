@@ -24,7 +24,10 @@ export const upsTracking = async (settings: UpsConfig, ctx: Context) => {
 
     const packageInfo = response.trackResponse.shipment[0].package[0]
     const events = packageInfo.activity
-    console.log(events)
+
+    if (!events) {
+      continue
+    }
 
     let newUpdateTime = new Date(shipment.lastInteractionDate)
     let delivered = false

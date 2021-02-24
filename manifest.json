@@ -30,7 +30,9 @@
     },
     "free": true,
     "type": "free",
-    "availableCountries": ["*"]
+    "availableCountries": [
+      "*"
+    ]
   },
   "credentialType": "absolute",
   "policies": [
@@ -81,6 +83,20 @@
       "name": "outbound-access",
       "attrs": {
         "host": "wwwcie.ups.com",
+        "path": "/*"
+      }
+    },
+    {
+      "name": "outbound-access",
+      "attrs": {
+        "host": "ct.soa-gw.canadapost.ca",
+        "path": "/*"
+      }
+    },
+    {
+      "name": "outbound-access",
+      "attrs": {
+        "host": "soa-gw.canadapost.ca",
         "path": "/*"
       }
     }

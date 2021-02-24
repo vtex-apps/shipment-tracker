@@ -2,5 +2,5 @@ export const CARRIERS = {
   UPS: 'UPS',
   USPS: 'USPS',
   FEDEX: 'FEDEX',
-  DHL: 'DHL',
+  CANADAPOST: 'CANADAPOST',
 } as const

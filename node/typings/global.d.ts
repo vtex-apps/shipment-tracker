@@ -9,6 +9,7 @@ interface Carriers {
   fedex: FedexConfig
   usps: UspsConfig
   ups: UpsConfig
+  canadaPost: CanadaPostConfig
 }
 
 interface CarrierConfig {
@@ -30,4 +31,9 @@ interface UpsConfig extends CarrierConfig {
 
 interface UspsConfig extends CarrierConfig {
   userId: string
+}
+
+interface CanadaPostConfig extends CarrierConfig {
+  userId: string
+  password: string
 }

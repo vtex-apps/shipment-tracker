@@ -19,5 +19,9 @@ export const getCarrier = (shipment: Package): Carrier | null => {
     return CARRIERS.UPS
   }
 
+  if (courier.includes('CANADAPOST')) {
+    return CARRIERS.CANADAPOST
+  }
+
   return null
 }

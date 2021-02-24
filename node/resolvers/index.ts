@@ -163,6 +163,11 @@ export const resolvers = {
             active: false,
             path: 'ups',
           },
+          canadaPost: {
+            name: 'Canada post',
+            active: false,
+            path: 'canadaPost'
+          }
         },
       }
 

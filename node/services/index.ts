@@ -1,6 +1,7 @@
-import { uspsTracking } from './usps'
-import { fedexTracking } from './fedex'
-import { upsTracking } from './ups'
+// import { uspsTracking } from './usps'
+// import { fedexTracking } from './fedex'
+// import { upsTracking } from './ups'
+import { canadaPostTracking} from './canadaPost'
 
 export const trackingService = {
   update: async (ctx: Context) => {
@@ -13,20 +14,31 @@ export const trackingService = {
       return
     }
 
+    console.log(settings)
+
     const {
-      carriers: { usps, ups, fedex },
+      carriers: {
+        // usps,
+        // ups,
+        // fedex,
+        canadaPost
+      },
     } = settings
 
-    if (usps.active) {
-      uspsTracking(usps, ctx)
-    }
+    // if (usps.active) {
+    //   uspsTracking(usps, ctx)
+    // }
 
-    if (fedex.active) {
-      fedexTracking(fedex, ctx)
-    }
+    // if (fedex.active) {
+    //   fedexTracking(fedex, ctx)
+    // }
 
-    if (ups.active) {
-      upsTracking(ups, ctx)
-    }
+    // if (ups.active) {
+    //   upsTracking(ups, ctx)
+    // }
+
+    // if (canadaPost.active) {
+      canadaPostTracking(canadaPost, ctx)
+    // }
   },
 }
