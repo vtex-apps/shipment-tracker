@@ -11,9 +11,8 @@ export const canadaPostTracking = async (settings: CanadaPostConfig, ctx: Contex
   // URL needs to be updated for production
 
   console.log(settings)
-
-  const userId = 'a48e2f2e66cc240f'
-  const password = '862bbd5858a482687cf4a2'
+  
+  const { userId, password } = settings
   const combined = userId + ':' + password
   const encode = (str: string):string => Buffer.from(str, 'binary').toString('base64');
 

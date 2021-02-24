@@ -15,6 +15,10 @@ import SaveAppSettings from '../queries/saveAppSettings.gql'
 import '../styles.global.css'
 
 const initialState = {
+  canadaPost: {
+    userId: '',
+    password: '',
+  },
   fedex: {
     key: '',
     accountNumber: '',
@@ -31,6 +35,11 @@ const initialState = {
 
 const reducer = (state: any, action: any) => {
   switch (action.type) {
+    case 'canadaPost':
+      return {
+        ...state,
+        canadaPost: { ...state.canadaPost, ...action.payload },
+      }
     case 'fedex':
       return { ...state, fedex: { ...state.fedex, ...action.payload } }
     case 'ups':
@@ -65,9 +74,7 @@ const Carriers: FC = () => {
     if (settings.carriers) {
       dispatch({
         type: 'setConfig',
-        payload: {
-          ...settings.carriers,
-        },
+        payload: settings.carriers,
       })
     }
   }, [data])
@@ -113,6 +120,34 @@ const Carriers: FC = () => {
           </div>
         }
       >
+        <PageBlock title="Canada Post" variation="full">
+          <div className="mb5">
+            <Input
+              value={state.canadaPost.userId}
+              onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                dispatch({
+                  type: 'canadaPost',
+                  payload: { userId: e.target.value },
+                })
+              }}
+              placeholder="User ID"
+              label="User ID"
+            />
+          </div>
+          <div className="mb5">
+            <Input
+              value={state.canadaPost.password}
+              onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                dispatch({
+                  type: 'canadaPost',
+                  payload: { password: e.target.value },
+                })
+              }
+              placeholder="Account Password"
+              label="Account Password"
+            />
+          </div>
+        </PageBlock>
         <PageBlock title="FedEx" variation="full">
           <div className="mb5">
             <Input
