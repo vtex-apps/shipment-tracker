@@ -3,11 +3,14 @@ import { resolvers } from '../resolvers'
 
 export const upsTracking = async (settings: UpsConfig, ctx: Context) => {
   const {
-    clients: { ups },
+    clients: { ups, oms },
   } = ctx
 
+  console.log(settings)
   const { key } = settings
-  const testTrackingNum = '572254454'
+  // const key = 'FD94AEEED2173F72'
+  const testTrackingNum = '7798339175'
+  console.log(testTrackingNum)
 
   const args = { carrier: 'UPS' }
   const shipments = await resolvers.Query.shipmentsByCarrier(null, args, ctx)
@@ -16,7 +19,7 @@ export const upsTracking = async (settings: UpsConfig, ctx: Context) => {
     const trackingNum = shipment.trackingNumber
     console.log(trackingNum)
 
-    const response:any = await ups.getTracking(testTrackingNum, key)
+    const response:any = await ups.getTracking(trackingNum, key)
 
     if (response.trackResponse.shipment[0].warnings) {
       continue
@@ -30,7 +33,9 @@ export const upsTracking = async (settings: UpsConfig, ctx: Context) => {
     }
 
     let newUpdateTime = new Date(shipment.lastInteractionDate)
+    let updateFlag = false
     let delivered = false
+    let trackingEvents = []
 
     for (const event of events) {
       const year = event.date.slice(0, 4)
@@ -41,11 +46,17 @@ export const upsTracking = async (settings: UpsConfig, ctx: Context) => {
       const second = event.time.slice(4)
 
       const timestamp = new Date(year, month, day, hour, minute, second)
+      const interactionDelivered = event.status.type === 'D'
+      const interactionMessage = event.status.description
+      const city = event['location']['address']['city']
+      const state = event['location']['address']['stateProvince']
+
+      trackingEvents.push({ city, state, description: interactionMessage, date: timestamp.toUTCString() })
 
 
       if (!shipment.lastInteractionDate || timestamp > new Date(shipment.lastInteractionDate)) {
-        const interactionDelivered = event.status.type === 'D'
-        const interactionMessage = event.status.description
+
+        updateFlag = true
 
         if (interactionDelivered) {
           delivered = true
@@ -64,6 +75,20 @@ export const upsTracking = async (settings: UpsConfig, ctx: Context) => {
         resolvers.Mutation.addInteraction(null, interaction, ctx)
       }
 
+    }
+
+    const trackingUpdate = {
+      isDelivered: delivered,
+      events: trackingEvents.reverse(),
+    }
+
+    oms.updateOrderTracking(
+      shipment.orderId,
+      shipment.invoiceId,
+      trackingUpdate
+    )
+
+    if (updateFlag) {
       const updateShipment = {
         id: shipment.id,
         delivered,

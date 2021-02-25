@@ -3,19 +3,26 @@ import { resolvers } from '../resolvers'
 
 export const fedexTracking = async (settings: FedexConfig, ctx: Context) => {
   const {
-    clients: { fedex },
+    clients: { fedex, oms },
   } = ctx
 
   // Update to reflect user settings
   // URL needs to be updated for production
 
   const url = `https://wsbeta.fedex.com:443/web-services`
+  console.log(settings)
   const { key, accountNumber, meterNumber, password } = settings
-  const testTrackingNum = '123456789012'
+  // const key = 'dIi5YaI9g9OAAvZe'
+  // const accountNumber = '510087240'
+  // const meterNumber = '100506821'
+  // const password = 'yKdWNPN8GVR7dlVuqccu2bCe6'
+
+  // const testTrackingNum = '123456789012'
 
   const args = { carrier: 'FEDEX' }
   const shipments = await resolvers.Query.shipmentsByCarrier(null, args, ctx)
 
+  console.log("shipments =>", shipments)
   for (const shipment of shipments) {
     const trackingNum = shipment.trackingNumber
     console.log(trackingNum)
@@ -57,7 +64,7 @@ export const fedexTracking = async (settings: FedexConfig, ctx: Context) => {
       <v16:CarrierCode>FDXE</v16:CarrierCode>
       <v16:PackageIdentifier>
       <v16:Type>TRACKING_NUMBER_OR_DOORTAG</v16:Type>
-      <v16:Value>${testTrackingNum}</v16:Value>
+      <v16:Value>${trackingNum}</v16:Value>
       </v16:PackageIdentifier>
 
       <v16:ShipmentAccountNumber/>
@@ -74,26 +81,39 @@ export const fedexTracking = async (settings: FedexConfig, ctx: Context) => {
     const response = await fedex.getTracking(url, body)
 
     parseString(response, (_err, result) => {
-      const requestStatus = result['SOAP-ENV:Envelope']['SOAP-ENV:Body'][0]['TrackReply'][0]['HighestSeverity'][0]
-
-      if (requestStatus !== 'SUCCESS') {
+      try {
+        result['SOAP-ENV:Envelope']['SOAP-ENV:Body'][0]['TrackReply'][0]['HighestSeverity'][0]
+        result['SOAP-ENV:Envelope']['SOAP-ENV:Body'][0]['TrackReply'][0]['CompletedTrackDetails'][0]['TrackDetails'][0]['Events']
+      } catch (err) {
+        console.log("err =>", err)
         return
       }
 
       const events = result['SOAP-ENV:Envelope']['SOAP-ENV:Body'][0]['TrackReply'][0]['CompletedTrackDetails'][0]['TrackDetails'][0]['Events']
-      console.log("events =>", events)
-
       let delivered = false
       let newLastInteractionDate = new Date(shipment.lastInteractionDate)
+      let trackingEvents = []
+      let updateFlag = false
+
 
       for (const event of events) {
         const timestamp = new Date(event.Timestamp[0])
+        const location = event['Address'][0]
+        const interactionMessage = event['EventDescription'][0]
+        const interactionDelivered = interactionMessage === 'Delivered'
+        const [city] = location['City']
+        const [state] = location['StateOrProvinceCode']
+        const description = interactionMessage
+        const date = event.Timestamp[0]
+
+        trackingEvents.push({ city, state, description, date })
+
         if (!shipment.lastInteractionDate || timestamp > new Date(shipment.lastInteractionDate)) {
-          const interactionMessage = event['EventDescription'][0]
-          const interactionDelivered = interactionMessage === 'Delivered'
+          updateFlag = true
           if (interactionDelivered) {
             delivered = true
           }
+
 
           const interaction = {
             shipmentId: shipment.id,
@@ -105,18 +125,29 @@ export const fedexTracking = async (settings: FedexConfig, ctx: Context) => {
             newLastInteractionDate = timestamp
           }
 
-          console.log(interaction)
           resolvers.Mutation.addInteraction(null, interaction, ctx)
         }
       }
 
-
-      const updateShipment = {
-        id: shipment.id,
-        delivered,
-        lastInteractionDate: newLastInteractionDate.toUTCString()
+      const trackingUpdate = {
+        isDelivered: delivered,
+        events: trackingEvents.reverse(),
       }
-      resolvers.Mutation.updateShipment(null, updateShipment, ctx)
+
+      oms.updateOrderTracking(
+        shipment.orderId,
+        shipment.invoiceId,
+        trackingUpdate
+      )
+
+      if (updateFlag) {
+        const updateShipment = {
+          id: shipment.id,
+          delivered,
+          lastInteractionDate: newLastInteractionDate.toUTCString()
+        }
+        resolvers.Mutation.updateShipment(null, updateShipment, ctx)
+      }
     })
   }
 }

@@ -18,7 +18,12 @@ export const trackingService = {
     console.log('config', settings)
 
     const {
-      carriers: { usps, ups, fedex, canadaPost },
+      carriers: {
+        usps,
+        ups,
+        fedex,
+        canadaPost
+      },
     } = settings
 
     if (usps.userId) {
