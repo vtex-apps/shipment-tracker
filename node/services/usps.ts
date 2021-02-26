@@ -77,7 +77,7 @@ export const uspsTracking = async (settings: UspsConfig, ctx: Context) => {
               return promises
             }
 
-            let trackingEvents: TrackingEvent[] = []
+            const trackingEvents: TrackingEvent[] = []
 
             if (trackSummary) {
               const [city] = trackSummary.EventCity
@@ -89,7 +89,7 @@ export const uspsTracking = async (settings: UspsConfig, ctx: Context) => {
             }
 
             if (trackingInfo.TrackDetail) {
-              trackingEvents = trackingInfo.TrackDetail.map((event) => {
+              const pastEvents = trackingInfo.TrackDetail.map((event) => {
                 const [city] = event.EventCity
                 const [state] = event.EventState
                 const [description] = event.Event
@@ -97,6 +97,8 @@ export const uspsTracking = async (settings: UspsConfig, ctx: Context) => {
 
                 return { city, state, description, date }
               })
+
+              trackingEvents.push(...pastEvents)
             }
 
             const trackingUpdate = {
