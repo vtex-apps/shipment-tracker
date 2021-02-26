@@ -1,27 +1,19 @@
-import { CARRIERS } from '../constants'
+import { Carrier } from '../constants'
+import { carrierLookup } from './carrierRegex'
 
 export const getCarrier = (shipment: Package): Carrier | null => {
-  const { courier } = shipment
+  let matched: Carrier | null = null
 
-  if (!courier) {
-    return null
+  for (const carrier in carrierLookup) {
+    const match = carrierLookup[carrier as keyof typeof carrierLookup](
+      shipment.trackingNumber
+    )
+
+    if (match) {
+      matched = match
+      break
+    }
   }
 
-  if (courier.includes('USPS')) {
-    return CARRIERS.USPS
-  }
-
-  if (courier.includes('UPS')) {
-    return CARRIERS.UPS
-  }
-
-  if (courier.includes('FEDEX')) {
-    return CARRIERS.UPS
-  }
-
-  if (courier.includes('CANADAPOST')) {
-    return CARRIERS.CANADAPOST
-  }
-
-  return null
+  return matched
 }

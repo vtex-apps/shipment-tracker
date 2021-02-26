@@ -1,5 +1,3 @@
-type Carrier = typeof CARRIERS[keyof typeof CARRIERS]
-
 interface Shipment {
   id: string
   trackingNumber: string

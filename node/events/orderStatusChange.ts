@@ -34,6 +34,8 @@ export async function orderStatusChange(ctx: StatusChangeContext) {
         return shipments
       }
 
+      console.log('identified carrier', carrier)
+
       const data = {
         trackingNumber: shipment.trackingNumber,
         carrier,
