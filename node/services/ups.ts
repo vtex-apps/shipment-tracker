@@ -9,8 +9,7 @@ export const upsTracking = async (settings: UpsConfig, ctx: Context) => {
   console.log(settings)
   const { key } = settings
   // const key = 'FD94AEEED2173F72'
-  const testTrackingNum = '7798339175'
-  console.log(testTrackingNum)
+  // const testTrackingNum = '7798339175'
 
   const args = { carrier: 'UPS' }
   const shipments = await resolvers.Query.shipmentsByCarrier(null, args, ctx)

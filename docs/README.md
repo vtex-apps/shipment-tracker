@@ -1,28 +1,33 @@
-# [ WORK IN PROGRESS ] Admin Example
+📢 Use this project, [contribute](https://github.com/vtex-apps/shipment-tracker) to it or open issues to help evolve it using [Store Discussion](https://github.com/vtex-apps/store-discussion).
 
-An example admin app that adds a menu button to the admin sidebar.
+<!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
 
-# PREVIEW NOTICE :construction:
+[![All Contributors](https://img.shields.io/badge/all_contributors-2-orange.svg?style=flat-square)](#contributors-)
 
-We're working on the **admin builder**, which will allow you to define two files: `admin/routes.json` file with everything you need to create an admin interface (routes paths and components), and `admin/navigation.json` which alows your admin app to insert itself in the sidebar navigation. This is a temporary example!
+<!-- ALL-CONTRIBUTORS-BADGE:END -->
 
-### How to develop admins
+# Shipment Tracker
 
-1. Admins always declare routes in `/admin/app/<route>`
+Shipment Tracker is a VTEX IO native solution that allows stores to provide built in shipment tracking for their customers. The carriers supported currently are USPS, UPS, Fedex, and Canada Post. Updates can be seen in the orders page, along with email updates being sent out to the customer.
 
-2. Declare the `admin` builder in your manifest
+## Configuration
+### Step 1 Installing the Shipment Tracker app
 
-3. When installed, the user navigates to `/admin/<route>`, but your app runs in an iframe that points to `/admin/app/<route>`.
+Using your terminal, log in to the desired VTEX account and run the following command:
 
-4. You can develop directly in the `/admin/app` route for convenience, but don't forget to test it inside the iframe. :)
+`vtex install vtex.shipment-tracker@0.x`
 
+### Step 2 - Adding in Carriers 
 
-### Quickstart
+1. In the admin page, scroll down to the carriers section. Currently, the app is configured to provide tracking information for USPS, UPS, FedEx, and Canada Post
+2. For the carrier(s) you would like to use, fill in the required fields such as user ID, password, etc. This can be found on the carrier websites, after creating an account and requesting developer access.
 
-1. Clone this repo
+## Modus Operandi
 
-2. `yarn --cwd react/` for code completion
+The app may be configured to use a **scheduler** where an administrator is responsible for activating regular database updates.
 
-3. `vtex link`
+To activate the scheduler, simply toggle the switch in the admin panel.
 
-4. Navigate to `workspace--account.myvtex.com/admin/app/example`
+## Customization
+
+In order to apply CSS customizations in this and other blocks, follow the instructions given in the recipe on [Using CSS Handles for store customization](https://vtex.io/docs/recipes/style/using-css-handles-for-store-customization).

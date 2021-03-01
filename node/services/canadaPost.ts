@@ -7,9 +7,6 @@ export const canadaPostTracking = async (settings: CanadaPostConfig, ctx: Contex
     clients: { canadaPost, oms },
   } = ctx
 
-  // Update to reflect user settings
-  // URL needs to be updated for production
-
   console.log(settings)
 
   const { userId, password } = settings
@@ -19,7 +16,6 @@ export const canadaPostTracking = async (settings: CanadaPostConfig, ctx: Contex
   const encode = (str: string):string => Buffer.from(str, 'binary').toString('base64');
 
   const authKey = encode(combined)
-
   // const testTrackingNum = '6365523030254206'
 
   const args = { carrier: 'CANADAPOST' }
