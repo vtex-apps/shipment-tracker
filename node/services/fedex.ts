@@ -134,11 +134,15 @@ export const fedexTracking = async (settings: FedexConfig, ctx: Context) => {
         events: trackingEvents.reverse(),
       }
 
-      oms.updateOrderTracking(
-        shipment.orderId,
-        shipment.invoiceId,
-        trackingUpdate
-      )
+      try {
+        oms.updateOrderTracking(
+          shipment.orderId,
+          shipment.invoiceId,
+          trackingUpdate
+        )
+      } catch {
+        console.log("Update Order Tracking Error")
+      }
 
       if (updateFlag) {
         const updateShipment = {

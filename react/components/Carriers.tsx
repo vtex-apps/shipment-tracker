@@ -6,6 +6,7 @@ import React, {
   useReducer,
   useState,
 } from 'react'
+import { injectIntl, defineMessages } from 'react-intl'
 import { useMutation, useQuery } from 'react-apollo'
 import { Button, PageBlock, Input } from 'vtex.styleguide'
 
@@ -53,7 +54,67 @@ const reducer = (state: any, action: any) => {
   }
 }
 
-const Carriers: FC = () => {
+const Carriers: FC<any> = ({ intl }) => {
+
+  const messages = defineMessages({
+    title: {
+      id: 'admin/carrier.title',
+      defaultMessage: 'Carrier',
+    },
+    save: {
+      id: 'admin/carrier.save.label',
+      defaultMessage: 'Save',
+    },
+    canadaPost: {
+      id: 'admin/carrier.canadapost.label',
+      defaultMessage: 'Canada Post',
+    },
+    canadaPostId: {
+      id: 'admin/carrier.canadapost.id.label',
+      defaultMessage: 'User ID',
+    },
+    canadaPostPassword: {
+      id: 'admin/carrier.canadapost.password.label',
+      defaultMessage: 'Account Password',
+    },
+    fedex: {
+      id: 'admin/carrier.fedex.label',
+      defaultMessage: 'Fedex',
+    },
+    fedexKey: {
+      id: 'admin/carrier.fedex.key.label',
+      defaultMessage: 'Key',
+    },
+    fedexAccountNumber: {
+      id: 'admin/carrier.fedex.account-number.label',
+      defaultMessage: 'Account Number',
+    },
+    fedexMeterNumber: {
+      id: 'admin/carrier.fedex.meter-number.label',
+      defaultMessage: 'Meter Number',
+    },
+    fedexPassword: {
+      id: 'admin/carrier.fedex.password.label',
+      defaultMessage: 'Password',
+    },
+    ups: {
+      id: 'admin/carrier.ups.label',
+      defaultMessage: 'UPS',
+    },
+    upsKey: {
+      id: 'admin/carrier.ups.key.label',
+      defaultMessage: 'Key',
+    },
+    usps: {
+      id: 'admin/carrier.usps.label',
+      defaultMessage: 'USPS',
+    },
+    uspsUserID: {
+      id: 'admin/carrier.usps.userID.label',
+      defaultMessage: 'User ID',
+    },
+  })
+
   const [loading, setLoading] = useState(false)
   const [appSettings, setAppSettings] = useState<any>(null)
   const [saveSettings] = useMutation(SaveAppSettings)
@@ -224,4 +285,4 @@ const Carriers: FC = () => {
   )
 }
 
-export default Carriers
+export default injectIntl(Carriers)

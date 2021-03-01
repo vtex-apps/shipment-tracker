@@ -1,6 +1,6 @@
 import React, { FC, useEffect, useState } from 'react'
 import { useMutation, useQuery } from 'react-apollo'
-// import { FormattedMessage } from 'react-intl'
+import { injectIntl, defineMessages } from 'react-intl'
 import {
   Layout,
   PageBlock,
@@ -18,7 +18,38 @@ import Carriers from './components/Carriers'
 
 import './styles.global.css'
 
-const AdminExample: FC = () => {
+const AdminExample: FC<any> = ({ intl }) => {
+
+  const messages = defineMessages({
+    title: {
+      id: 'admin/tracking.title',
+      defaultMessage: 'Shipment Tracker',
+    },
+    settingsTab: {
+      id: 'admin/tracking.settings.tab.label',
+      defaultMessage: 'Settings',
+    },
+    scheduleLabel: {
+      id: 'admin/tracking.schedule.label',
+      defaultMessage: 'Update Schedule',
+    },
+    lastSchedule: {
+      id: 'admin/tracking.last-schedule.label',
+      defaultMessage: 'Last Schedule Run:',
+    },
+    nextSchedule: {
+      id: 'admin/tracking.next-schedule.label',
+      defaultMessage: 'Next Schedule Run:',
+    },
+    active: {
+      id: 'admin/tracking.active.label',
+      defaultMessage: 'Active',
+    },
+    inactive: {
+      id: 'admin/tracking.inactive.label',
+      defaultMessage: 'Inactive',
+    }
+  })
   const [activeTab, setActiveTab] = useState<number>(1)
   const [schedule, setSchedule] = useState<null | Schedule>(null)
   const [
@@ -71,23 +102,22 @@ const AdminExample: FC = () => {
     <Layout
       pageHeader={
         <PageHeader
-          title="Shipping Tracker"
-          // title={<FormattedMessage id="admin-example.hello-world" />}
+          title={intl.formatMessage(messages.title)}
         />
       }
     >
       <Tabs fullWidth>
         <Tab
-          label="Settings"
+          label={intl.formatMessage(messages.settingsTab)}
           active={activeTab === 1}
           onClick={() => setActiveTab(1)}
         >
           <div className="mt5" />
-          <PageBlock title="Update Schedule" variation="full">
+          <PageBlock title={intl.formatMessage(messages.scheduleLabel)} variation="full">
             <div className="flex justify-between">
               <div>
                 <div className="flex">
-                  <div className="mr4">Last Schedule Run:</div>
+                  <div className="mr4">{intl.formatMessage(messages.lastSchedule)}</div>
                   {`${
                     schedule?.lastInteractionIn
                       ? schedule.lastInteractionIn
@@ -95,14 +125,14 @@ const AdminExample: FC = () => {
                   }`}
                 </div>
                 <div className="flex mt3">
-                  <div className="mr4">Next Schedule Run:</div>
+                  <div className="mr4">{intl.formatMessage(messages.nextSchedule)}</div>
                   {`${schedule ? schedule.nextExecution : '-'}`}
                 </div>
               </div>
               <div className="flex items-center">
                 <div className={'w4'}>
                   <Toggle
-                    label={schedule ? 'Active' : 'Inactive'}
+                    label={schedule ? intl.formatMessage(messages.active) : intl.formatMessage(messages.inactive)}
                     semantic
                     size="large"
                     checked={schedule?.nextExecution}
@@ -129,4 +159,4 @@ const AdminExample: FC = () => {
   )
 }
 
-export default AdminExample
+export default injectIntl(AdminExample)

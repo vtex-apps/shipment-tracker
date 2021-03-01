@@ -1,5 +1,23 @@
 {
-  "admin-example.navigation.label": "Example admin",
-  "admin-example.hello-world": "",
-  "appframe.navigation.example": ""
+  "admin/tracking.title": "admin/tracking.title",
+  "admin/tracking.last-schedule.label": "admin/tracking.last-schedule.label",
+  "admin/tracking.next-schedule.label": "admin/tracking.next-schedule.label",
+  "admin/tracking.settings.tab.label": "admin/tracking.settings.tab.label",
+  "admin/tracking.schedule.label": "admin/tracking.schedule.label",
+  "admin/tracking.active.label": "admin/tracking.active.label",
+  "admin/tracking.inactive.label": "admin/tracking.inactive.label",
+  "admin/carrier.title": "admin/carrier.title",
+  "admin/carrier.save.label": "admin/carrier.save.label",
+  "admin/carrier.canadapost.label": "admin/carrier.canadapost.label",
+  "admin/carrier.canadapost.id.label": "admin/carrier.canadapost.id.label",
+  "admin/carrier.canadapost.password.label": "admin/carrier.canadapost.password.label",
+  "admin/carrier.fedex.label": "admin/carrier.fedex.label",
+  "admin/carrier.fedex.key.label": "admin/carrier.fedex.key.label",
+  "admin/carrier.fedex.account-number.label": "admin/carrier.fedex.account-number.label",
+  "admin/carrier.fedex.meter-number.label": "admin/carrier.fedex.meter-number.label",
+  "admin/carrier.fedex.password.label": "admin/carrier.fedex.password.label",
+  "admin/carrier.ups.label": "admin/carrier.ups.label",
+  "admin/carrier.ups.key.label": "admin/carrier.ups.key.label",
+  "admin/carrier.usps.label": "admin/carrier.usps.label",
+  "admin/carrier.usps.userID.label": "admin/carrier.usps.userID.label"
 }
