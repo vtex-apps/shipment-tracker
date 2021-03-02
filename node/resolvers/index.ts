@@ -286,7 +286,12 @@ export const resolvers = {
         clients: { masterdata },
       } = ctx
 
-      const { carrier, page = 1, pageSize = 99 } = args
+      const { carrier, page = 1, pageSize = 99, createdBefore = null } = args
+      let where = `carrier=${carrier} AND delivered=false`
+
+      if (createdBefore) {
+        where = where.concat(` AND createdIn<${createdBefore}`)
+      }
 
       const result = await masterdata.searchDocuments<Shipment>({
         dataEntity: 'shipment',
@@ -302,7 +307,8 @@ export const resolvers = {
           'createdIn',
           'updatedIn',
         ],
-        where: `carrier=${carrier} AND delivered=false`,
+        where,
+        sort: 'createdIn DESC',
         pagination: {
           page,
           pageSize,
