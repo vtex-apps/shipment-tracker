@@ -4,12 +4,11 @@ import { resolvers } from '../resolvers'
 export const ups = async (settings: UpsConfig, ctx: Context) => {
   const {
     clients: { ups: upsClient, oms },
+    vtex: { logger }
   } = ctx
 
   console.log(settings)
   const { key } = settings
-  // const key = 'FD94AEEED2173F72'
-  // const testTrackingNum = '7798339175'
 
   const args = { carrier: 'UPS' }
   const shipments = await resolvers.Query.shipmentsByCarrier(null, args, ctx)
@@ -87,8 +86,11 @@ export const ups = async (settings: UpsConfig, ctx: Context) => {
         shipment.invoiceId,
         trackingUpdate
       )
-    } catch {
-      console.log("Update Order Tracking Error")
+    } catch (err) {
+      logger.error({
+        error: err,
+        message: 'ShipmentTracker-UPSUpdateOrderTrackingError',
+      })
     }
 
     if (updateFlag) {

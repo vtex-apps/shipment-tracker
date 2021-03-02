@@ -4,20 +4,13 @@ import { resolvers } from '../resolvers'
 export const fedex = async (settings: FedexConfig, ctx: Context) => {
   const {
     clients: { fedex: fedexClient, oms },
+    vtex: { logger }
   } = ctx
 
-  // Update to reflect user settings
-  // URL needs to be updated for production
 
   const url = `https://wsbeta.fedex.com:443/web-services`
   console.log(settings)
   const { key, accountNumber, meterNumber, password } = settings
-  // const key = 'dIi5YaI9g9OAAvZe'
-  // const accountNumber = '510087240'
-  // const meterNumber = '100506821'
-  // const password = 'yKdWNPN8GVR7dlVuqccu2bCe6'
-
-  // const testTrackingNum = '123456789012'
 
   const args = { carrier: 'FEDEX' }
   const shipments = await resolvers.Query.shipmentsByCarrier(null, args, ctx)
@@ -85,7 +78,10 @@ export const fedex = async (settings: FedexConfig, ctx: Context) => {
         result['SOAP-ENV:Envelope']['SOAP-ENV:Body'][0]['TrackReply'][0]['HighestSeverity'][0]
         result['SOAP-ENV:Envelope']['SOAP-ENV:Body'][0]['TrackReply'][0]['CompletedTrackDetails'][0]['TrackDetails'][0]['Events']
       } catch (err) {
-        console.log("err =>", err)
+        logger.error({
+          error: err,
+          message: 'ShipmentTracker-FedExTrackingError',
+        })
         return
       }
 
@@ -140,8 +136,11 @@ export const fedex = async (settings: FedexConfig, ctx: Context) => {
           shipment.invoiceId,
           trackingUpdate
         )
-      } catch {
-        console.log("Update Order Tracking Error")
+      } catch (err){
+        logger.error({
+          error: err,
+          message: 'ShipmentTracker-FedExUpdateOrderTrackingError',
+        })
       }
 
       if (updateFlag) {

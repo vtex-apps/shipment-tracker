@@ -5,18 +5,16 @@ import { resolvers } from '../resolvers'
 export const canadaPost = async (settings: CanadaPostConfig, ctx: Context) => {
   const {
     clients: { canadaPost: canadaPostClient, oms },
+    vtex: { logger }
   } = ctx
 
   console.log(settings)
 
   const { userId, password } = settings
-  // const userId = 'a48e2f2e66cc240f'
-  // const password = '862bbd5858a482687cf4a2'
   const combined = userId + ':' + password
   const encode = (str: string):string => Buffer.from(str, 'binary').toString('base64');
 
   const authKey = encode(combined)
-  // const testTrackingNum = '6365523030254206'
 
   const args = { carrier: 'CANADAPOST' }
   const shipments = await resolvers.Query.shipmentsByCarrier(null, args, ctx)
@@ -95,7 +93,10 @@ export const canadaPost = async (settings: CanadaPostConfig, ctx: Context) => {
       })
 
     } catch (err){
-      console.log('err', err)
+      logger.error({
+        error: err,
+        message: 'ShipmentTracker-CanadaPostTrackingError',
+      })
       continue
     }
   }

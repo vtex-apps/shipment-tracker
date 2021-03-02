@@ -5,7 +5,7 @@ export async function orderStatusChange(ctx: StatusChangeContext) {
   const {
     body,
     clients: { oms },
-    // vtex: { logger },
+    vtex: { logger },
   } = ctx
 
   console.log('event', body)
@@ -53,6 +53,9 @@ export async function orderStatusChange(ctx: StatusChangeContext) {
     const result = await Promise.all(shipments)
     console.log('promise result', result)
   } catch (err) {
-    console.log(err)
+    logger.error({
+      error: err,
+      message: 'ShipmentTracker-OrderStatusChangeError',
+    })
   }
 }

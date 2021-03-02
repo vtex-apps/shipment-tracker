@@ -9,7 +9,7 @@ const USPS_DELIVERED_STATUS = 'Delivered'
 
 export const usps = async (settings: UspsConfig, ctx: Context) => {
   const {
-    vtex: { account },
+    vtex: { account, logger },
     clients: { usps: uspsClient, oms },
   } = ctx
 
@@ -139,7 +139,10 @@ export const usps = async (settings: UspsConfig, ctx: Context) => {
           await Promise.allSettled(updates)
         }
       } catch (err) {
-        console.log('err', err)
+        logger.error({
+          error: err,
+          message: 'ShipmentTracker-USPSTrackingError',
+        })
       }
     }
 
