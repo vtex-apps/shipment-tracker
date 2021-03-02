@@ -1,9 +1,9 @@
 import { parseString } from 'xml2js'
 import { resolvers } from '../resolvers'
 
-export const fedexTracking = async (settings: FedexConfig, ctx: Context) => {
+export const fedex = async (settings: FedexConfig, ctx: Context) => {
   const {
-    clients: { fedex, oms },
+    clients: { fedex: fedexClient, oms },
   } = ctx
 
   // Update to reflect user settings
@@ -78,7 +78,7 @@ export const fedexTracking = async (settings: FedexConfig, ctx: Context) => {
       </soapenv:Body>
     </soapenv:Envelope>`
 
-    const response = await fedex.getTracking(url, body)
+    const response = await fedexClient.getTracking(url, body)
 
     parseString(response, (_err, result) => {
       try {

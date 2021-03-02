@@ -1,9 +1,9 @@
 import { resolvers } from '../resolvers'
 
 
-export const upsTracking = async (settings: UpsConfig, ctx: Context) => {
+export const ups = async (settings: UpsConfig, ctx: Context) => {
   const {
-    clients: { ups, oms },
+    clients: { ups: upsClient, oms },
   } = ctx
 
   console.log(settings)
@@ -18,7 +18,7 @@ export const upsTracking = async (settings: UpsConfig, ctx: Context) => {
     const trackingNum = shipment.trackingNumber
     console.log(trackingNum)
 
-    const response:any = await ups.getTracking(trackingNum, key)
+    const response:any = await upsClient.getTracking(trackingNum, key)
 
     if (response.trackResponse.shipment[0].warnings) {
       continue

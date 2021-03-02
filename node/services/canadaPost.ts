@@ -2,9 +2,9 @@ import { parseString } from 'xml2js'
 import { resolvers } from '../resolvers'
 
 
-export const canadaPostTracking = async (settings: CanadaPostConfig, ctx: Context) => {
+export const canadaPost = async (settings: CanadaPostConfig, ctx: Context) => {
   const {
-    clients: { canadaPost, oms },
+    clients: { canadaPost: canadaPostClient, oms },
   } = ctx
 
   console.log(settings)
@@ -27,7 +27,7 @@ export const canadaPostTracking = async (settings: CanadaPostConfig, ctx: Contex
     console.log("trackingNum =>", trackingNum)
 
     try {
-      const response = await canadaPost.getTracking(trackingNum, authKey)
+      const response = await canadaPostClient.getTracking(trackingNum, authKey)
       parseString(response, (_err, result) => {
         console.log("result =>", result)
         const events = result['tracking-detail']['significant-events'][0]['occurrence']

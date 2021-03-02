@@ -1,5 +1,5 @@
 import { resolvers } from '../resolvers'
-import { getCarrier } from '../utils/getCarrier'
+import { getCarrier } from '.'
 
 export async function orderStatusChange(ctx: StatusChangeContext) {
   const {
@@ -25,15 +25,13 @@ export async function orderStatusChange(ctx: StatusChangeContext) {
 
   console.log('packages', packages)
 
-  const addShipments = packages.reduce(
-    (shipments: Array<Promise<string>>, shipment) => {
-      const carrier = getCarrier(shipment)
-      const externalLink = shipment.trackingUrl // add trackingUrl validation
+  const shipments = []
+  for (const shipment of packages) {
+    // eslint-disable-next-line no-await-in-loop
+    const carrier = await getCarrier(ctx, shipment)
+    const externalLink = shipment.trackingUrl // add trackingUrl validation
 
-      if (!carrier) {
-        return shipments
-      }
-
+    if (carrier) {
       console.log('identified carrier', carrier)
 
       const data = {
@@ -48,14 +46,11 @@ export async function orderStatusChange(ctx: StatusChangeContext) {
       console.log('addShipment data', data)
 
       shipments.push(resolvers.Mutation.addShipment(null, data, ctx))
-
-      return shipments
-    },
-    []
-  )
+    }
+  }
 
   try {
-    const result = await Promise.all(addShipments)
+    const result = await Promise.all(shipments)
     console.log('promise result', result)
   } catch (err) {
     console.log(err)

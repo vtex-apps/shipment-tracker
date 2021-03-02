@@ -19,18 +19,22 @@ const initialState = {
   canadaPost: {
     userId: '',
     password: '',
+    active: false,
   },
   fedex: {
     key: '',
     accountNumber: '',
     meterNumber: '',
     password: '',
+    active: false,
   },
   ups: {
     key: '',
+    active: false,
   },
   usps: {
     userId: '',
+    active: false,
   },
 }
 
@@ -54,8 +58,23 @@ const reducer = (state: any, action: any) => {
   }
 }
 
-const Carriers: FC<any> = ({ intl }) => {
+const markActive = (settings: any) => {
+  const {
+    usps: { userId: uspsUserId },
+    ups: { key: upsKey },
+    fedex: { key: fedexKey },
+    canadaPost: { userId: canadaPostUserId },
+  } = settings.carriers
 
+  settings.carriers.usps.active = !!uspsUserId
+  settings.carriers.ups.active = !!upsKey
+  settings.carriers.fedex.active = !!fedexKey
+  settings.carriers.canadaPost.active = !!canadaPostUserId
+
+  return settings
+}
+
+const Carriers: FC<any> = ({ intl }) => {
   const messages = defineMessages({
     title: {
       id: 'admin/carrier.title',
@@ -155,7 +174,7 @@ const Carriers: FC<any> = ({ intl }) => {
     await saveSettings({
       variables: {
         version: process.env.VTEX_APP_VERSION,
-        settings: JSON.stringify(settings),
+        settings: JSON.stringify(markActive(settings)),
       },
     })
     setLoading(false)

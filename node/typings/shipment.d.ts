@@ -1,7 +1,7 @@
 interface Shipment {
   id: string
   trackingNumber: string
-  carrier: Carrier
+  carrier: string
   delivered: boolean
   orderId: string
   invoiceId: string
@@ -33,6 +33,7 @@ interface ShipmentsByCarrierArgs {
   carrier: Carrier
   page?: number
   pageSize?: number
+  createdBefore?: string | null
 }
 
 interface Interaction {

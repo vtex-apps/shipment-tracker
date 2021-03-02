@@ -10,8 +10,12 @@ interface Carriers {
   usps: UspsConfig
   ups: UpsConfig
   canadaPost: CanadaPostConfig
+  [index: string]: any
 }
 
+interface CarrierConfig {
+  active: boolean
+}
 interface FedexConfig extends CarrierConfig {
   key: string
   accountNumber: string
