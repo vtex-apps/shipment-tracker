@@ -19,7 +19,6 @@ export const canadaPost = async (settings: CanadaPostConfig, ctx: Context) => {
   const args = { carrier: 'CANADAPOST' }
   const shipments = await resolvers.Query.shipmentsByCarrier(null, args, ctx)
 
-  console.log(shipments)
   for (const shipment of shipments) {
     const trackingNum = shipment.trackingNumber
     console.log("trackingNum =>", trackingNum)
@@ -27,7 +26,6 @@ export const canadaPost = async (settings: CanadaPostConfig, ctx: Context) => {
     try {
       const response = await canadaPostClient.getTracking(trackingNum, authKey)
       parseString(response, (_err, result) => {
-        console.log("result =>", result)
         const events = result['tracking-detail']['significant-events'][0]['occurrence']
 
         let newUpdateTime = new Date(shipment.lastInteractionDate)

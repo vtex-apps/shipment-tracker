@@ -9,7 +9,6 @@ export const fedex = async (settings: FedexConfig, ctx: Context) => {
 
 
   const url = `https://wsbeta.fedex.com:443/web-services`
-  console.log(settings)
   const { key, accountNumber, meterNumber, password } = settings
 
   const args = { carrier: 'FEDEX' }
@@ -18,7 +17,6 @@ export const fedex = async (settings: FedexConfig, ctx: Context) => {
   console.log("shipments =>", shipments)
   for (const shipment of shipments) {
     const trackingNum = shipment.trackingNumber
-    console.log(trackingNum)
 
     const body =
     `<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"

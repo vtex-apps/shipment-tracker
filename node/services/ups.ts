@@ -7,7 +7,6 @@ export const ups = async (settings: UpsConfig, ctx: Context) => {
     vtex: { logger }
   } = ctx
 
-  console.log(settings)
   const { key } = settings
 
   const args = { carrier: 'UPS' }
@@ -15,7 +14,6 @@ export const ups = async (settings: UpsConfig, ctx: Context) => {
 
   for (const shipment of shipments) {
     const trackingNum = shipment.trackingNumber
-    console.log(trackingNum)
 
     const response:any = await upsClient.getTracking(trackingNum, key)
 
