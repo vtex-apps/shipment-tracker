@@ -13,13 +13,11 @@ import {
 import ViewSchedule from './queries/viewSchedule.gql'
 import DeleteSchedule from './queries/deleteSchedule.gql'
 import CreateSchedule from './queries/createSchedule.gql'
-import TrackingTable from './components/TrackingTable'
 import Carriers from './components/Carriers'
 
 import './styles.global.css'
 
 const AdminExample: FC<any> = ({ intl }) => {
-
   const messages = defineMessages({
     title: {
       id: 'admin/tracking.title',
@@ -48,7 +46,7 @@ const AdminExample: FC<any> = ({ intl }) => {
     inactive: {
       id: 'admin/tracking.inactive.label',
       defaultMessage: 'Inactive',
-    }
+    },
   })
   const [activeTab, setActiveTab] = useState<number>(1)
   const [schedule, setSchedule] = useState<null | Schedule>(null)
@@ -100,11 +98,7 @@ const AdminExample: FC<any> = ({ intl }) => {
 
   return (
     <Layout
-      pageHeader={
-        <PageHeader
-          title={intl.formatMessage(messages.title)}
-        />
-      }
+      pageHeader={<PageHeader title={intl.formatMessage(messages.title)} />}
     >
       <Tabs fullWidth>
         <Tab
@@ -113,11 +107,16 @@ const AdminExample: FC<any> = ({ intl }) => {
           onClick={() => setActiveTab(1)}
         >
           <div className="mt5" />
-          <PageBlock title={intl.formatMessage(messages.scheduleLabel)} variation="full">
+          <PageBlock
+            title={intl.formatMessage(messages.scheduleLabel)}
+            variation="full"
+          >
             <div className="flex justify-between">
               <div>
                 <div className="flex">
-                  <div className="mr4">{intl.formatMessage(messages.lastSchedule)}</div>
+                  <div className="mr4">
+                    {intl.formatMessage(messages.lastSchedule)}
+                  </div>
                   {`${
                     schedule?.lastInteractionIn
                       ? schedule.lastInteractionIn
@@ -125,14 +124,20 @@ const AdminExample: FC<any> = ({ intl }) => {
                   }`}
                 </div>
                 <div className="flex mt3">
-                  <div className="mr4">{intl.formatMessage(messages.nextSchedule)}</div>
+                  <div className="mr4">
+                    {intl.formatMessage(messages.nextSchedule)}
+                  </div>
                   {`${schedule ? schedule.nextExecution : '-'}`}
                 </div>
               </div>
               <div className="flex items-center">
                 <div className={'w4'}>
                   <Toggle
-                    label={schedule ? intl.formatMessage(messages.active) : intl.formatMessage(messages.inactive)}
+                    label={
+                      schedule
+                        ? intl.formatMessage(messages.active)
+                        : intl.formatMessage(messages.inactive)
+                    }
                     semantic
                     size="large"
                     checked={schedule?.nextExecution}
@@ -143,16 +148,6 @@ const AdminExample: FC<any> = ({ intl }) => {
             </div>
           </PageBlock>
           <Carriers />
-        </Tab>
-        <Tab
-          label="Tracking"
-          active={activeTab === 2}
-          onClick={() => setActiveTab(2)}
-        >
-          <div className="mt5" />
-          <PageBlock variation="full">
-            <TrackingTable />
-          </PageBlock>
         </Tab>
       </Tabs>
     </Layout>
