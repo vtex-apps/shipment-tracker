@@ -246,7 +246,7 @@ export const resolvers = {
 
       return result
     },
-    shipment: async (_: any, args: any, ctx: Context) => {
+    shipment: async (_: any, args: any, ctx: Context | StatusChangeContext) => {
       const {
         clients: { masterdata },
       } = ctx
@@ -265,7 +265,7 @@ export const resolvers = {
           'createdIn',
           'updatedIn',
         ],
-        where: `id=${args.id}`,
+        where: `trackingNumber=${args.trackingNumber}`,
         pagination: {
           page: 1,
           pageSize: 99,
